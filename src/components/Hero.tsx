@@ -37,6 +37,7 @@ export const SOCIALS = [
 export default function Hero() {
   const root = useRef<HTMLElement>(null)
   const photo = useRef<HTMLDivElement>(null)
+  const photoIn = useRef<HTMLDivElement>(null)
 
   // Desktop: a circle of colour follows the pointer over the greyscale portrait.
   useEffect(() => {
@@ -70,7 +71,7 @@ export default function Hero() {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ delay: introDelay(0.05) })
       tl.from('[data-hero-letter]', { yPercent: 110, duration: 1.2, ease: 'power4.out', stagger: 0.035 })
-        .from(photo.current, { yPercent: 18, opacity: 0, duration: 1.6, ease: 'expo.out' }, 0.25)
+        .from(photoIn.current, { yPercent: 18, opacity: 0, duration: 1.6, ease: 'expo.out' }, 0.25)
         .from('[data-hero-fade]', { y: 24, opacity: 0, duration: 1, ease: 'power3.out', stagger: 0.08 }, 0.7)
 
       // Scrolling away: the two name lines slide apart, the outline fills in and the photo drifts up.
@@ -104,9 +105,12 @@ export default function Hero() {
         className="pointer-events-none relative z-10 -mt-6 min-h-0 w-full flex-1 lg:absolute lg:bottom-0 lg:left-1/2 lg:mt-0 lg:w-[min(46vw,46rem,64svh)] lg:flex-none lg:-translate-x-1/2"
         style={{ '--x': '50%', '--y': '40%', '--r': '0px' } as CSSProperties}
       >
-        <Cutout variant="-grey" className="mx-auto block h-full w-auto max-w-none object-contain object-bottom lg:h-auto lg:w-full" />
-        <div className="absolute inset-0 [clip-path:circle(var(--r)_at_var(--x)_var(--y))]">
-          <Cutout className="mx-auto block h-full w-auto max-w-none object-contain object-bottom lg:h-auto lg:w-full" />
+        {/* The entrance animates this inner layer; the scroll drift moves the outer one, so they never fight. */}
+        <div ref={photoIn} className="relative h-full lg:h-auto">
+          <Cutout variant="-grey" className="mx-auto block h-full w-auto max-w-none object-contain object-bottom lg:h-auto lg:w-full" />
+          <div className="absolute inset-0 [clip-path:circle(var(--r)_at_var(--x)_var(--y))]">
+            <Cutout className="mx-auto block h-full w-auto max-w-none object-contain object-bottom lg:h-auto lg:w-full" />
+          </div>
         </div>
         <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-paper via-paper/70 to-transparent" />
       </div>

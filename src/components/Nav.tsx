@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ME, PROJECTS, SERVICES } from '../data'
-import { gsap, prefersReducedMotion, scrollToElement, scrollToTop, setScrollLocked } from '../lib/motion'
+import { gsap, prefersReducedMotion, scrollToElement, setScrollLocked } from '../lib/motion'
 import { ArrowUpRight } from './ui'
 
 const LINKS = [
@@ -86,10 +86,10 @@ export default function Nav() {
         }`}
       >
         <div className="flex items-center gap-6">
-          <button onClick={() => (open ? setOpen(false) : scrollToTop())} aria-label="Back to top" className="font-display text-xl font-bold tracking-[-0.03em]">
-            {ME.first}
-            <span className="text-clay">.</span>
-          </button>
+          {/* The same mark as the favicon. Clicking it reloads the site from the top. */}
+          <a href="/" aria-label={`${ME.name}, reload home`} className="block transition-transform duration-300 hover:-rotate-6 hover:scale-105" data-magnetic>
+            <img src="/favicon.svg" alt="" width={36} height={36} className="h-9 w-9 rounded-[0.6rem]" />
+          </a>
           <span className="hidden lg:block">
             <Available className="text-xs font-medium text-grey" />
           </span>
