@@ -14,7 +14,8 @@ let lenis: Lenis | null = null
 
 // One Lenis instance drives smooth scrolling and keeps ScrollTrigger in sync with it.
 export function startSmoothScroll() {
-  if (lenis || prefersReducedMotion()) return () => {}
+  // Phones and tablets keep their own native scrolling, which feels right there and keeps scroll animations exact.
+  if (lenis || prefersReducedMotion() || !finePointer()) return () => {}
   lenis = new Lenis({ duration: 1.15 })
   lenis.on('scroll', ScrollTrigger.update)
   const tick = (time: number) => lenis?.raf(time * 1000)

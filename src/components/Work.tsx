@@ -62,7 +62,7 @@ export default function Work() {
     const mm = gsap.matchMedia()
     mm.add('(max-width: 767px)', () => {
       gsap.utils.toArray<HTMLElement>('[data-card]', grid.current).forEach((el) => {
-        gsap.from(el, { rotateX: 24, y: 70, opacity: 0, transformPerspective: 1000, transformOrigin: '50% 100%', duration: 1.1, ease: 'back.out(1.2)', scrollTrigger: { trigger: el, start: 'top bottom-=40', once: true } })
+        gsap.from(el, { rotateX: 20, y: 60, opacity: 0.001, transformPerspective: 1000, transformOrigin: '50% 100%', duration: 1, ease: 'power3.out', immediateRender: false, scrollTrigger: { trigger: el, start: 'top 95%', once: true } })
       })
     })
     return () => mm.revert()

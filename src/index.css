@@ -48,8 +48,13 @@ html.lenis body {
   scroll-behavior: auto !important;
 }
 
+/* clip (not hidden) keeps position: sticky working and stops phones from widening the page. */
+html,
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+body {
   font-family: var(--font-sans);
   background: var(--color-paper);
 }

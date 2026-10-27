@@ -1,13 +1,46 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { PROCESS, SKILLS } from '../data'
 import { gsap, prefersReducedMotion } from '../lib/motion'
 
+const AUTOPLAY = 3200
+
 // Dark block: the tools grouped by area, each group pointing at the projects that prove it, then the process.
-// Phones: the skill groups stack like cards and the process becomes a swipe carousel.
+// Phones: the skill groups are cards that rise in, and the process becomes a self-playing swipe carousel.
 export default function Skills() {
   const root = useRef<HTMLElement>(null)
   const steps = useRef<HTMLOListElement>(null)
   const [step, setStep] = useState(0)
+  const [inView, setInView] = useState(false)
+  const [held, setHeld] = useState(false)
+  const resume = useRef(0)
+
+  const goTo = (i: number) => {
+    const el = steps.current
+    const card = el?.children[i] as HTMLElement | undefined
+    if (!el || !card) return
+    el.scrollTo({ left: card.offsetLeft - (el.clientWidth - card.offsetWidth) / 2, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+  }
+
+  // The carousel plays itself while it is on screen. Touching it pauses, and play resumes 4s after the last touch.
+  useEffect(() => {
+    const el = steps.current
+    if (!el) return
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { threshold: 0.6 })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+  useEffect(() => {
+    const el = steps.current
+    if (!el || !inView || held || prefersReducedMotion() || el.scrollWidth <= el.clientWidth + 1) return
+    const id = window.setTimeout(() => goTo((step + 1) % PROCESS.length), AUTOPLAY)
+    return () => window.clearTimeout(id)
+  }, [step, inView, held])
+  const hold = () => {
+    setHeld(true)
+    window.clearTimeout(resume.current)
+    resume.current = window.setTimeout(() => setHeld(false), 4000)
+  }
+  useEffect(() => () => window.clearTimeout(resume.current), [])
 
   // Process carousel (phones): the centred card faces you, the others shrink and dim.
   useEffect(() => {
@@ -49,24 +82,11 @@ export default function Skills() {
   useLayoutEffect(() => {
     if (prefersReducedMotion() || !root.current) return
     const ctx = gsap.context(() => {
-      // Phones: as the next skill card rides up, the one underneath sinks back and dims.
-      gsap.matchMedia().add('(max-width: 1023px)', () => {
-        const rows = gsap.utils.toArray<HTMLElement>('[data-skill-row]')
-        rows.forEach((row, i) => {
-          const next = rows[i + 1]
-          if (!next) return
-          gsap.to(row, { scale: 0.92, filter: 'brightness(0.6)', ease: 'none', scrollTrigger: { trigger: next, start: 'top 42%', end: 'top 14%', scrub: true } })
-        })
-      })
-      gsap.utils.toArray<HTMLElement>('[data-skill-row]').forEach((row, i) => {
-        gsap.from(row.querySelectorAll('[data-chip]'), {
-          x: i % 2 ? 80 : -80,
-          opacity: 0,
-          duration: 0.9,
-          stagger: 0.035,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: row, start: 'top 85%', once: true },
-        })
+      // Each group rises into place, then its chips pop in one after another. Plays once, never reverses.
+      gsap.utils.toArray<HTMLElement>('[data-skill-row]').forEach((row) => {
+        const tl = gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 90%', once: true } })
+        tl.from(row, { y: 50, opacity: 0, scale: 0.96, duration: 0.8, ease: 'power3.out', immediateRender: false })
+          .from(row.querySelectorAll('[data-chip]'), { scale: 0.6, opacity: 0, duration: 0.5, stagger: 0.03, ease: 'back.out(2)', immediateRender: false }, 0.2)
       })
       gsap.fromTo(
         '[data-process-line]',
@@ -99,8 +119,7 @@ export default function Skills() {
             <li
               key={g.group}
               data-skill-row
-              className="grid origin-top gap-4 border-paper/10 py-7 max-lg:sticky max-lg:top-[var(--stack-top)] max-lg:mb-4 max-lg:rounded-[1.75rem] max-lg:border max-lg:bg-ink-3 max-lg:p-6 max-lg:shadow-[0_-20px_40px_-20px_rgba(0,0,0,0.8)] lg:grid-cols-[16rem_1fr] lg:gap-10 lg:border-t"
-              style={{ '--stack-top': `calc(5.5rem + ${i * 12}px)` } as CSSProperties}
+              className="grid gap-4 border-paper/10 py-7 max-lg:mb-4 max-lg:rounded-[1.75rem] max-lg:border max-lg:bg-ink-3 max-lg:p-6 lg:grid-cols-[16rem_1fr] lg:gap-10 lg:border-t"
             >
               <div>
                 <h3 className="flex items-baseline justify-between font-display text-2xl font-bold uppercase tracking-[-0.03em]">
@@ -134,13 +153,22 @@ export default function Skills() {
               className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-[12%] pb-2 sm:-mx-8 sm:px-[20%] lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-8 lg:overflow-visible lg:p-0"
               aria-label="How a project runs"
               data-reveal
+              onTouchStart={hold}
+              onPointerDown={hold}
+              onWheel={hold}
             >
-              {PROCESS.map((p) => (
+              {PROCESS.map((p, i) => (
                 <li
                   key={p.step}
-                  className="relative w-[76%] shrink-0 snap-center rounded-3xl border border-paper/10 bg-ink-3 p-6 will-change-transform sm:w-[60%] lg:w-auto lg:border-0 lg:bg-transparent lg:p-0"
+                  className={`relative w-[76%] shrink-0 snap-center rounded-3xl border bg-ink-3 p-6 transition-[border-color,box-shadow] duration-700 will-change-transform sm:w-[60%] lg:w-auto lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none ${
+                    i === step ? 'border-sand/50 shadow-[0_0_50px_-12px_rgba(206,179,166,0.55)]' : 'border-paper/10'
+                  }`}
                 >
-                  <span className="relative z-10 flex h-[4.3rem] w-[4.3rem] items-center justify-center rounded-full border border-paper/20 bg-ink font-display text-xl font-semibold">
+                  <span
+                    className={`relative z-10 flex h-[4.3rem] w-[4.3rem] items-center justify-center rounded-full border font-display text-xl font-semibold transition-colors duration-700 lg:border-paper/20 lg:bg-ink lg:text-paper ${
+                      i === step ? 'border-sand bg-sand text-ink' : 'border-paper/20 bg-ink'
+                    }`}
+                  >
                     {p.step}
                   </span>
                   <h3 className="mt-6 font-display text-3xl font-bold uppercase tracking-[-0.035em]">{p.title}</h3>
@@ -148,12 +176,29 @@ export default function Skills() {
                 </li>
               ))}
             </ol>
-            {/* Phone: which step is centred */}
-            <div className="mt-6 flex justify-center gap-2 lg:hidden" aria-hidden="true">
+            {/* Phone: story-style progress. The active bar fills while the carousel waits to move on. */}
+            <div className="mt-6 flex justify-center gap-2 lg:hidden">
               {PROCESS.map((p, i) => (
-                <span key={p.step} className={`h-1.5 rounded-full transition-all duration-500 ${i === step ? 'w-8 bg-sand' : 'w-1.5 bg-paper/25'}`} />
+                <button
+                  key={p.step}
+                  onClick={() => {
+                    hold()
+                    goTo(i)
+                  }}
+                  aria-label={`Show step ${i + 1}: ${p.title}`}
+                  className={`relative h-1.5 overflow-hidden rounded-full transition-all duration-500 ${i === step ? 'w-10 bg-paper/20' : i < step ? 'w-4 bg-sand/70' : 'w-4 bg-paper/20'}`}
+                >
+                  {i === step && (
+                    <span
+                      key={`${step}-${held}-${inView}`}
+                      className="absolute inset-y-0 left-0 bg-sand"
+                      style={{ width: held || !inView ? '100%' : undefined, animation: held || !inView ? undefined : `fill ${AUTOPLAY}ms linear forwards` }}
+                    />
+                  )}
+                </button>
               ))}
             </div>
+            <style>{'@keyframes fill { from { width: 0 } to { width: 100% } }'}</style>
           </div>
         </div>
       </div>
