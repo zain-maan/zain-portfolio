@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { PROCESS, SKILLS } from '../data'
 import { gsap, prefersReducedMotion } from '../lib/motion'
 
-const AUTOPLAY = 3200
+const AUTOPLAY = 2000
 
 // Dark block: the tools grouped by area, each group pointing at the projects that prove it, then the process.
 // Phones: the skill groups are cards that rise in, and the process becomes a self-playing swipe carousel.
@@ -82,11 +82,28 @@ export default function Skills() {
   useLayoutEffect(() => {
     if (prefersReducedMotion() || !root.current) return
     const ctx = gsap.context(() => {
-      // Each group rises into place, then its chips pop in one after another. Plays once, never reverses.
-      gsap.utils.toArray<HTMLElement>('[data-skill-row]').forEach((row) => {
-        const tl = gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 90%', once: true } })
-        tl.from(row, { y: 50, opacity: 0, scale: 0.96, duration: 0.8, ease: 'power3.out', immediateRender: false })
-          .from(row.querySelectorAll('[data-chip]'), { scale: 0.6, opacity: 0, duration: 0.5, stagger: 0.03, ease: 'back.out(2)', immediateRender: false }, 0.2)
+      const rows = gsap.utils.toArray<HTMLElement>('[data-skill-row]')
+      // Phones: each card swings in from alternating sides in 3D, tied to the scroll.
+      gsap.matchMedia().add('(max-width: 1023px)', () => {
+        rows.forEach((row, i) => {
+          const side = i % 2 ? 1 : -1
+          gsap.fromTo(
+            row,
+            { xPercent: side * 45, rotateY: side * -28, rotate: side * 4, opacity: 0.15, transformPerspective: 900, transformOrigin: side < 0 ? '0% 50%' : '100% 50%' },
+            { xPercent: 0, rotateY: 0, rotate: 0, opacity: 1, ease: 'power2.out', scrollTrigger: { trigger: row, start: 'top bottom', end: 'top 62%', scrub: 0.6 } },
+          )
+        })
+      })
+      // Then the chips pop in one after another.
+      rows.forEach((row) => {
+        gsap.from(row.querySelectorAll('[data-chip]'), {
+          scale: 0.5,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.035,
+          ease: 'back.out(2.2)',
+          scrollTrigger: { trigger: row, start: 'top 80%', once: true },
+        })
       })
       gsap.fromTo(
         '[data-process-line]',
@@ -98,7 +115,7 @@ export default function Skills() {
   }, [])
 
   return (
-    <section ref={root} id="skills" className="mx-2 rounded-[2rem] bg-ink px-4 py-24 text-paper sm:mx-4 sm:px-8 lg:py-32">
+    <section ref={root} id="skills" className="mx-2 overflow-hidden rounded-[2rem] bg-ink px-4 py-24 text-paper sm:mx-4 sm:px-8 lg:py-32">
       <div className="mx-auto max-w-[90rem]">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
