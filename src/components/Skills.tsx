@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { PROCESS, SKILLS } from '../data'
 import { gsap, prefersReducedMotion } from '../lib/motion'
 
-const AUTOPLAY = 2000
+const AUTOPLAY = 1300
 
 // Dark block: the tools grouped by area, each group pointing at the projects that prove it, then the process.
 // Phones: the skill groups are cards that rise in, and the process becomes a self-playing swipe carousel.
@@ -41,6 +41,20 @@ export default function Skills() {
     resume.current = window.setTimeout(() => setHeld(false), 4000)
   }
   useEffect(() => () => window.clearTimeout(resume.current), [])
+
+  // Each time a step becomes active (phones): the number flips in, the title rises, the text fades up and a
+  // shine sweeps across the card.
+  useEffect(() => {
+    const el = steps.current
+    const card = el?.children[step] as HTMLElement | undefined
+    if (!el || !card || prefersReducedMotion() || el.scrollWidth <= el.clientWidth + 1) return
+    const tl = gsap.timeline()
+    tl.fromTo(card.querySelector('[data-step-num]'), { rotateY: -180, scale: 0.6 }, { rotateY: 0, scale: 1, duration: 0.6, ease: 'back.out(1.8)' })
+      .fromTo(card.querySelector('[data-step-title]'), { yPercent: 110 }, { yPercent: 0, duration: 0.5, ease: 'power4.out' }, 0.08)
+      .fromTo(card.querySelector('[data-step-text]'), { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: 'power3.out' }, 0.16)
+      .fromTo(card.querySelector('[data-step-shine]'), { xPercent: -120 }, { xPercent: 220, duration: 0.8, ease: 'power2.inOut' }, 0)
+    return () => void tl.progress(1).kill()
+  }, [step])
 
   // Process carousel (phones): the centred card faces you, the others shrink and dim.
   useEffect(() => {
@@ -185,11 +199,22 @@ export default function Skills() {
                     className={`relative z-10 flex h-[4.3rem] w-[4.3rem] items-center justify-center rounded-full border font-display text-xl font-semibold transition-colors duration-700 lg:border-paper/20 lg:bg-ink lg:text-paper ${
                       i === step ? 'border-sand bg-sand text-ink' : 'border-paper/20 bg-ink'
                     }`}
+                    data-step-num
                   >
                     {p.step}
                   </span>
-                  <h3 className="mt-6 font-display text-3xl font-bold uppercase tracking-[-0.035em]">{p.title}</h3>
-                  <p className="mt-3 max-w-xs text-paper/55">{p.text}</p>
+                  <h3 className="mt-6 overflow-hidden font-display text-3xl font-bold uppercase tracking-[-0.035em]">
+                    <span data-step-title className="block">
+                      {p.title}
+                    </span>
+                  </h3>
+                  <p data-step-text className="mt-3 max-w-xs text-paper/55">
+                    {p.text}
+                  </p>
+                  {/* Light sweep (phones) */}
+                  <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl lg:hidden">
+                    <span data-step-shine className="absolute inset-y-0 left-0 w-1/2 -translate-x-[120%] skew-x-[-20deg] bg-gradient-to-r from-transparent via-sand/15 to-transparent" />
+                  </span>
                 </li>
               ))}
             </ol>

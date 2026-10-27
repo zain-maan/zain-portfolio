@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { gsap, prefersReducedMotion } from '../lib/motion'
+import { gsap, prefersReducedMotion, ScrollTrigger } from '../lib/motion'
 import { SERVICES } from '../data'
 import { ArrowUpRight } from './ui'
 
@@ -8,16 +8,24 @@ export default function Services() {
   const [open, setOpen] = useState<number | null>(null)
   const list = useRef<HTMLUListElement>(null)
 
-  // Phones: each title wipes in from the left, then its text and tags follow.
+  // Phones: each time a row comes into view, scrolling down or back up, its title wipes in from the side it
+  // enters on, then its text and tags follow. Nothing hides when a row leaves, so it never blinks out.
   useLayoutEffect(() => {
     if (!list.current || prefersReducedMotion()) return
     const mm = gsap.matchMedia()
     mm.add('(max-width: 1023px)', () => {
       gsap.utils.toArray<HTMLElement>('li', list.current).forEach((row) => {
-        const tl = gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 90%', once: true } })
-        tl.fromTo(row.querySelector('[data-service-title]'), { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'expo.out', clearProps: 'clipPath' })
-          .from(row.querySelectorAll('[data-service-body] > *'), { y: 24, opacity: 0, duration: 0.7, stagger: 0.08, ease: 'power3.out', immediateRender: false }, 0.25)
-          .from(row.querySelector('[data-service-arrow]'), { rotate: -90, scale: 0.4, opacity: 0, duration: 0.7, ease: 'back.out(2)', immediateRender: false }, 0.1)
+        const play = (fromBelow: boolean) => {
+          const tl = gsap.timeline()
+          tl.fromTo(
+            row.querySelector('[data-service-title]'),
+            { clipPath: fromBelow ? 'inset(0% 100% 0% 0%)' : 'inset(0% 0% 0% 100%)' },
+            { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.9, ease: 'expo.out', clearProps: 'clipPath' },
+          )
+            .fromTo(row.querySelectorAll('[data-service-body] > *'), { y: fromBelow ? 24 : -24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, stagger: 0.08, ease: 'power3.out' }, 0.2)
+            .fromTo(row.querySelector('[data-service-arrow]'), { rotate: fromBelow ? -90 : 90, scale: 0.4 }, { rotate: 0, scale: 1, duration: 0.7, ease: 'back.out(2)' }, 0.1)
+        }
+        ScrollTrigger.create({ trigger: row, start: 'top 92%', end: 'bottom 8%', onEnter: () => play(true), onEnterBack: () => play(false) })
       })
     })
     return () => mm.revert()
