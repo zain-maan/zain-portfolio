@@ -84,7 +84,7 @@ export default function Hero() {
   }, [])
 
   return (
-    <section ref={root} className="relative flex h-[100svh] min-h-[620px] flex-col overflow-hidden bg-paper pt-24">
+    <section ref={root} className="relative mx-auto flex h-[100svh] max-h-[72rem] min-h-[620px] w-full max-w-[120rem] flex-col overflow-hidden bg-paper pt-24">
       {/* Soft warm light behind the portrait */}
       <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[30%] h-[70vh] w-[70vh] -translate-x-1/2 rounded-full bg-sand/45 blur-[110px]" />
 
