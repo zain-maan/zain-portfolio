@@ -33,11 +33,35 @@ export type Project = {
   code?: string
   shots: string[] // desktop screenshots in public/work
   mobile?: string
-  visual?: 'corpmind' | 'mindai' // a designed visual instead of screenshots
+  visual?: 'mindai' // a designed visual instead of screenshots
   tone: string // card background behind the screens
 }
 
 export const PROJECTS: Project[] = [
+  {
+    id: 'glow',
+    name: 'Glow Studio',
+    category: 'Web',
+    status: 'Live',
+    year: '2026',
+    kind: 'Salon booking + owner dashboard',
+    outcome: 'Online booking for a Dubai salon, with a dashboard that runs the whole day.',
+    problem: 'Most salons still book over WhatsApp and calls: clients wait for replies, stylists get double-booked and the owner has no clear numbers.',
+    solution:
+      'Clients pick a treatment, stylist and a real free slot in under a minute. The owner gets a dashboard for revenue, appointments, clients and team occupancy, on desktop and phone.',
+    features: [
+      'Real-time slots per stylist, no double bookings',
+      'Owner dashboard: revenue, appointments, clients, team',
+      '3D glow bubble and a physics treatment picker',
+      'Phone-first, down to the dashboard tab bar',
+    ],
+    stack: ['React', 'TypeScript', 'GSAP', 'Three.js', 'Matter.js'],
+    live: 'https://glow-studio-olive.vercel.app',
+    code: 'https://github.com/zain-maan/Glow-Studio',
+    shots: ['glow-desk', 'glow-services', 'glow-admin'],
+    mobile: 'glow-mob',
+    tone: '#f3dde5',
+  },
   {
     id: 'lumen',
     name: 'Lumen Stay',
@@ -65,28 +89,27 @@ export const PROJECTS: Project[] = [
     tone: '#0b3a40',
   },
   {
-    id: 'glow',
-    name: 'Glow Studio',
-    category: 'Web',
-    status: 'Live',
+    id: 'corpmind',
+    name: 'CorpMind',
+    category: 'AI',
+    status: 'Case study',
     year: '2026',
-    kind: 'Salon booking + owner dashboard',
-    outcome: 'Online booking for a Dubai salon, with a dashboard that runs the whole day.',
-    problem: 'Most salons still book over WhatsApp and calls: clients wait for replies, stylists get double-booked and the owner has no clear numbers.',
+    kind: 'Multi-agent company knowledge assistant',
+    outcome: 'Employees ask one chat; the right department agent answers with sources.',
+    problem: 'Staff waste hours searching emails, PDFs and policy documents, and sensitive answers must stay within the right roles and branches.',
     solution:
-      'Clients pick a treatment, stylist and a real free slot in under a minute. The owner gets a dashboard for revenue, appointments, clients and team occupancy, on desktop and phone.',
+      'An orchestrator routes each question to an HR, Finance, IT or Legal agent, which answers only from approved company documents with citations. Role- and branch-based access keeps data where it belongs, and leave or expense requests are drafted automatically.',
     features: [
-      'Real-time slots per stylist, no double bookings',
-      'Owner dashboard: revenue, appointments, clients, team',
-      '3D glow bubble and a physics treatment picker',
-      'Phone-first, down to the dashboard tab bar',
+      'Orchestrator routing to HR, Finance, IT and Legal agents',
+      'RAG over company documents with citations',
+      'Role and branch based access control',
+      'AI-drafted leave and expense requests with approvals',
+      'Multi-company, multi-branch, private chat history',
     ],
-    stack: ['React', 'TypeScript', 'GSAP', 'Three.js', 'Matter.js'],
-    live: 'https://glow-studio-olive.vercel.app',
-    code: 'https://github.com/zain-maan/Glow-Studio',
-    shots: ['glow-desk', 'glow-services', 'glow-admin'],
-    mobile: 'glow-mob',
-    tone: '#f3dde5',
+    stack: ['FastAPI', 'Multi-agent', 'Qdrant', 'FastEmbed', 'PostgreSQL', 'Docker'],
+    code: 'https://github.com/zain-maan/CorpMind',
+    shots: ['corp-desk', 'corp-chat', 'corp-dash', 'corp-agents', 'corp-library'],
+    tone: '#0c2b2a',
   },
   {
     id: 'mindai',
@@ -160,37 +183,8 @@ export const PROJECTS: Project[] = [
     mobile: 'zarri-mob',
     tone: '#123528',
   },
-  {
-    id: 'corpmind',
-    name: 'CorpMind',
-    category: 'AI',
-    status: 'Case study',
-    year: '2026',
-    kind: 'Multi-agent company knowledge assistant',
-    outcome: 'Employees ask one chat; the right department agent answers with sources.',
-    problem: 'Staff waste hours searching emails, PDFs and policy documents, and sensitive answers must stay within the right roles and branches.',
-    solution:
-      'An orchestrator routes each question to an HR, Finance, IT or Legal agent, which answers only from approved company documents with citations. Role- and branch-based access keeps data where it belongs, and leave or expense requests are drafted automatically.',
-    features: [
-      'Orchestrator routing to HR, Finance, IT and Legal agents',
-      'RAG over company documents with citations',
-      'Role and branch based access control',
-      'AI-drafted leave and expense requests with approvals',
-      'Multi-company, multi-branch, private chat history',
-    ],
-    stack: ['FastAPI', 'Multi-agent', 'Qdrant', 'FastEmbed', 'PostgreSQL', 'Docker'],
-    code: 'https://github.com/zain-maan/CorpMind',
-    shots: [],
-    visual: 'corpmind',
-    tone: '#16213a',
-  },
 ]
 
-export const MORE_WORK = [
-  { name: 'AI Personal Assistant', text: 'n8n + OpenAI agent for Gmail, Calendar, Docs and Tasks', href: 'https://github.com/zain-maan/ai-personal-assistant-n8n' },
-  { name: 'Multi-Document AI Assistant', text: 'LangGraph agent with RAG, web search and tools', href: 'https://github.com/zain-maan/doc_ai_assistant' },
-  { name: 'AI PDF Chatbot', text: 'FastAPI + React RAG app with auth and citations', href: 'https://github.com/zain-maan/pdf-chatbot-ai' },
-]
 
 export const SERVICES = [
   {
@@ -200,8 +194,8 @@ export const SERVICES = [
   },
   {
     title: 'Mobile Apps',
-    text: 'Android apps and installable web apps from one codebase, so your product reaches phones without a second team.',
-    tags: ['Capacitor', 'PWA', 'Android', 'Offline-ready'],
+    text: 'Cross-platform apps in Flutter and Dart, plus installable web apps, so your product reaches every phone from one codebase.',
+    tags: ['Flutter', 'Dart', 'Android', 'Capacitor', 'PWA'],
   },
   {
     title: 'AI Agents & Automation',
@@ -220,7 +214,8 @@ export const SKILLS = [
   { group: 'Backend', items: ['Python', 'FastAPI', 'PostgreSQL', 'SQLite', 'Alembic', 'JWT auth', 'WebSockets', 'Docker'], usedIn: ['CorpMind', 'MindAI', 'Zarri'] },
   { group: 'AI', items: ['LLM agents', 'Tool calling', 'Multi-agent', 'RAG', 'LangChain', 'LangGraph', 'Qdrant', 'FAISS', 'Groq', 'OpenAI', 'Whisper', 'Text-to-speech'], usedIn: ['Aria', 'Zarri', 'CorpMind', 'MindAI'] },
   { group: 'Automation', items: ['n8n', 'WhatsApp Cloud API', 'Google Workspace APIs', 'Webhooks'], usedIn: ['Zarri', 'AI Assistant'] },
-  { group: 'Mobile & Deploy', items: ['Capacitor', 'Android', 'PWA', 'Vercel', 'Render', 'Git'], usedIn: ['MindAI', 'All live sites'] },
+  { group: 'Mobile', items: ['Flutter', 'Dart', 'Capacitor', 'Android', 'PWA'], usedIn: ['MindAI', 'Flutter apps'] },
+  { group: 'Deploy', items: ['Vercel', 'Render', 'Hugging Face', 'Docker', 'Git', 'GitHub'], usedIn: ['All live sites'] },
 ]
 
 export const PROCESS = [

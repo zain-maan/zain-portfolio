@@ -7,7 +7,7 @@ const cut = (variant: string, ext: string) => `/${ME.cutout}${variant}-720.${ext
 
 function Cutout({ variant = '', className = '' }: { variant?: string; className?: string }) {
   return (
-    <picture>
+    <picture className="flex h-full justify-center lg:block lg:h-auto">
       <source type="image/avif" srcSet={cut(variant, 'avif')} sizes="(min-width: 1024px) 46vw, 100vw" />
       <img src={`/${ME.cutout}${variant}-720.webp`} srcSet={cut(variant, 'webp')} sizes="(min-width: 1024px) 46vw, 100vw" alt="" fetchPriority="high" className={className} />
     </picture>

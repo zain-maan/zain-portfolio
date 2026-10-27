@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { MORE_WORK, PROJECTS, type Category, type Project } from '../data'
+import { PROJECTS, type Category, type Project } from '../data'
 import { gsap, prefersReducedMotion } from '../lib/motion'
 import CaseStudy from './CaseStudy'
 import ProjectMedia from './ProjectMedia'
@@ -101,24 +101,6 @@ export default function Work() {
           {list.map((p, i) => (
             <ProjectCard key={p.id} project={p} number={PROJECTS.indexOf(p) + 1} offset={i % 2 === 1} onOpen={() => open(p.id)} />
           ))}
-        </div>
-
-        {/* Smaller repos */}
-        <div className="mt-24 border-t border-line pt-8" data-reveal>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-grey">More on GitHub</p>
-          <ul className="mt-4 divide-y divide-line">
-            {MORE_WORK.map((m) => (
-              <li key={m.name}>
-                <a href={m.href} target="_blank" rel="noreferrer" className="group flex items-center justify-between gap-6 py-5">
-                  <span>
-                    <span className="font-display text-xl font-semibold tracking-[-0.02em] transition-colors group-hover:text-clay sm:text-2xl">{m.name}</span>
-                    <span className="mt-1 block text-sm text-grey">{m.text}</span>
-                  </span>
-                  <ArrowUpRight size={22} className="shrink-0 transition-transform duration-300 group-hover:rotate-45" />
-                </a>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
 

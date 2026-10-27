@@ -1,5 +1,4 @@
 import { useLayoutEffect, useRef } from 'react'
-import { PROJECTS } from '../data'
 import { gsap, prefersReducedMotion } from '../lib/motion'
 
 const TEXT =
@@ -7,11 +6,6 @@ const TEXT =
 // Words that stay in the accent colour once lit.
 const ACCENT = new Set(['websites,', 'apps', 'AI', 'agents'])
 
-const STATS = [
-  { value: String(PROJECTS.length).padStart(2, '0'), label: 'Featured projects' },
-  { value: String(PROJECTS.filter((p) => p.live).length).padStart(2, '0'), label: 'Live sites to try' },
-  { value: '03', label: 'Web · App · AI' },
-]
 
 // The statement's words light up one by one as the section scrolls through.
 export default function Statement() {
@@ -42,14 +36,6 @@ export default function Statement() {
             </span>
           ))}
         </p>
-        <dl className="mt-16 grid grid-cols-3 gap-4 border-t border-line pt-8 sm:gap-8">
-          {STATS.map((s, i) => (
-            <div key={s.label} data-reveal={i * 0.08}>
-              <dd className="font-display text-5xl font-bold tracking-[-0.05em] sm:text-7xl">{s.value}</dd>
-              <dt className="mt-2 text-sm text-grey">{s.label}</dt>
-            </div>
-          ))}
-        </dl>
       </div>
     </section>
   )

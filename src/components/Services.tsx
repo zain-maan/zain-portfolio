@@ -1,10 +1,31 @@
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { gsap, prefersReducedMotion } from '../lib/motion'
 import { SERVICES } from '../data'
 import { ArrowUpRight } from './ui'
 
 // Big rows in the "/SERVICE" style. Hover (or tap on a phone) opens a row to show what it covers.
 export default function Services() {
   const [open, setOpen] = useState<number | null>(null)
+  const list = useRef<HTMLUListElement>(null)
+
+  // Phones: the row passing the middle of the screen opens by itself, and each title wipes in from the left.
+  useLayoutEffect(() => {
+    if (!list.current) return
+    const mm = gsap.matchMedia()
+    mm.add('(max-width: 1023px)', () => {
+      const rows = gsap.utils.toArray<HTMLElement>('li', list.current)
+      rows.forEach((row, i) => {
+        gsap.timeline({ scrollTrigger: { trigger: row, start: 'top 55%', end: 'bottom 45%', onToggle: (self) => self.isActive && setOpen(i) } })
+        if (prefersReducedMotion()) return
+        gsap.fromTo(
+          row.querySelector('[data-service-title]'),
+          { clipPath: 'inset(0% 100% 0% 0%)', x: -20 },
+          { clipPath: 'inset(0% 0% 0% 0%)', x: 0, duration: 1.1, ease: 'expo.out', clearProps: 'clipPath,transform', scrollTrigger: { trigger: row, start: 'top 88%', once: true } },
+        )
+      })
+    })
+    return () => mm.revert()
+  }, [])
 
   return (
     <section id="services" className="px-4 py-24 sm:px-8 lg:py-36">
@@ -23,7 +44,7 @@ export default function Services() {
           </p>
         </div>
 
-        <ul className="mt-14 border-b border-line" onMouseLeave={() => setOpen(null)}>
+        <ul ref={list} className="mt-14 border-b border-line" onMouseLeave={() => window.matchMedia('(pointer: fine)').matches && setOpen(null)}>
           {SERVICES.map((s, i) => {
             const isOpen = open === i
             return (
@@ -36,6 +57,7 @@ export default function Services() {
                 >
                   <span className="text-sm font-medium text-grey">{String(i + 1).padStart(2, '0')}</span>
                   <span
+                    data-service-title
                     className={`font-display text-[clamp(1.7rem,4.6vw,4.2rem)] font-bold uppercase leading-[0.95] tracking-[-0.045em] transition-[color,transform] duration-500 ${
                       isOpen ? 'translate-x-2 text-ink' : 'text-ink/35'
                     }`}

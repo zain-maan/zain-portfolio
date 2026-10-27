@@ -1,17 +1,16 @@
 import type { Project } from '../data'
 import { Shot } from './ui'
-import { CorpMindVisual, MindAIVisual } from './Visuals'
+import { MindAIVisual } from './Visuals'
 
 // The project's "cover": a browser frame with its screens plus a phone, on the project's colour.
 // Projects without public screenshots show a designed visual instead.
 export default function ProjectMedia({ project: p, shot = 0, large = false }: { project: Project; shot?: number; large?: boolean }) {
-  if (p.visual === 'corpmind') return <CorpMindVisual />
   if (p.visual === 'mindai') return <MindAIVisual />
 
   return (
     <div className="absolute inset-0 overflow-hidden" style={{ background: p.tone }}>
       <div className="absolute inset-0 bg-[radial-gradient(80%_70%_at_20%_0%,rgba(255,255,255,0.18),transparent_60%)]" />
-      <div className="absolute left-[7%] right-[13%] top-[11%] overflow-hidden rounded-[0.7rem] bg-black shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] ring-1 ring-black/10">
+      <div className={`absolute top-[11%] overflow-hidden ${p.mobile ? 'left-[7%] right-[13%]' : 'left-[8%] right-[8%]'} rounded-[0.7rem] bg-black shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] ring-1 ring-black/10`}>
         <div className="flex items-center gap-1.5 bg-[#111] px-3 py-2">
           <span className="h-2 w-2 rounded-full bg-[#ff5f57]" />
           <span className="h-2 w-2 rounded-full bg-[#febc2e]" />
