@@ -16,14 +16,21 @@ export default function Services() {
     mm.add('(max-width: 1023px)', () => {
       gsap.utils.toArray<HTMLElement>('li', list.current).forEach((row) => {
         const play = (fromBelow: boolean) => {
+          // Scrolling back up plays slower and softer, so it reads as a gentle reveal rather than a snap.
+          const slow = fromBelow ? 1 : 1.9
           const tl = gsap.timeline()
           tl.fromTo(
             row.querySelector('[data-service-title]'),
             { clipPath: fromBelow ? 'inset(0% 100% 0% 0%)' : 'inset(0% 0% 0% 100%)' },
-            { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.9, ease: 'expo.out', clearProps: 'clipPath' },
+            { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.9 * slow, ease: fromBelow ? 'expo.out' : 'power2.out', clearProps: 'clipPath' },
           )
-            .fromTo(row.querySelectorAll('[data-service-body] > *'), { y: fromBelow ? 24 : -24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, stagger: 0.08, ease: 'power3.out' }, 0.2)
-            .fromTo(row.querySelector('[data-service-arrow]'), { rotate: fromBelow ? -90 : 90, scale: 0.4 }, { rotate: 0, scale: 1, duration: 0.7, ease: 'back.out(2)' }, 0.1)
+            .fromTo(
+              row.querySelectorAll('[data-service-body] > *'),
+              { y: fromBelow ? 24 : -24, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.6 * slow, stagger: 0.08 * slow, ease: 'power3.out' },
+              0.2 * slow,
+            )
+            .fromTo(row.querySelector('[data-service-arrow]'), { rotate: fromBelow ? -90 : 90, scale: 0.4 }, { rotate: 0, scale: 1, duration: 0.7 * slow, ease: 'back.out(2)' }, 0.1 * slow)
         }
         ScrollTrigger.create({ trigger: row, start: 'top 92%', end: 'bottom 8%', onEnter: () => play(true), onEnterBack: () => play(false) })
       })
