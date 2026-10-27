@@ -1,20 +1,25 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ME } from '../data'
+import { ME, PROJECTS, SERVICES } from '../data'
 import { gsap, prefersReducedMotion, scrollToElement, scrollToTop, setScrollLocked } from '../lib/motion'
 import { ArrowUpRight } from './ui'
 
 const LINKS = [
-  { id: 'work', label: 'Work' },
-  { id: 'services', label: 'Services' },
-  { id: 'about', label: 'About' },
+  { id: 'work', label: 'Work', count: PROJECTS.length },
+  { id: 'services', label: 'Services', count: SERVICES.length },
+  { id: 'skills', label: 'Skills' },
   { id: 'contact', label: 'Contact' },
 ]
 
-export function Logo() {
+const pad = (n: number) => String(n).padStart(2, '0')
+
+export function Available({ className = '' }: { className?: string }) {
   return (
-    <span className="font-display text-xl font-semibold tracking-[-0.03em]">
-      {ME.first}
-      <span className="text-ember">.</span>
+    <span className={`inline-flex items-center gap-2 ${className}`}>
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-70" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+      </span>
+      Available for new projects
     </span>
   )
 }
@@ -55,21 +60,21 @@ export default function Nav() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5">
       {open && (
-        <div ref={menu} id="menu" className="fixed inset-0 flex flex-col bg-ink-2 px-6 pb-10 pt-28 md:hidden">
-          <div aria-hidden="true" className="pointer-events-none absolute -right-24 top-10 h-72 w-72 rounded-full bg-ember/30 blur-3xl" />
-          <ul className="relative">
-            {LINKS.map((l, i) => (
-              <li key={l.id} className="overflow-hidden border-b border-white/10">
-                <button onClick={() => go(l.id)} data-menu-item className="flex w-full items-baseline justify-between py-4 font-display text-5xl font-semibold tracking-[-0.04em]">
+        <div ref={menu} id="menu" className="fixed inset-0 flex flex-col bg-paper px-6 pb-10 pt-28 md:hidden">
+          <ul>
+            {LINKS.map((l) => (
+              <li key={l.id} className="overflow-hidden border-b border-line">
+                <button onClick={() => go(l.id)} data-menu-item className="flex w-full items-start justify-between py-4 text-left font-display text-5xl font-bold uppercase tracking-[-0.04em]">
                   {l.label}
-                  <span className="text-sm font-medium text-muted">0{i + 1}</span>
+                  {l.count && <span className="text-sm font-medium tracking-normal text-grey">{pad(l.count)}</span>}
                 </button>
               </li>
             ))}
           </ul>
-          <div className="relative mt-auto overflow-hidden">
-            <button onClick={() => go('contact')} data-menu-item className="btn btn-ember w-full">
-              Start a project <ArrowUpRight size={18} />
+          <div className="mt-auto space-y-4 overflow-hidden">
+            <Available className="text-sm text-grey" />
+            <button onClick={() => go('contact')} data-menu-item className="btn btn-ink w-full">
+              Let's talk <ArrowUpRight size={18} />
             </button>
           </div>
         </div>
@@ -77,37 +82,37 @@ export default function Nav() {
 
       <nav
         className={`relative mx-auto flex h-14 max-w-[90rem] items-center justify-between rounded-full pl-5 pr-2 transition-all duration-500 ${
-          scrolled && !open ? 'border border-white/10 bg-ink/70 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.8)] backdrop-blur-xl' : 'border border-transparent'
+          scrolled && !open ? 'border border-line bg-paper/75 shadow-[0_20px_50px_-30px_rgba(10,9,9,0.35)] backdrop-blur-xl' : 'border border-transparent'
         }`}
       >
-        <button onClick={() => (open ? setOpen(false) : scrollToTop())} aria-label="Back to top">
-          <Logo />
-        </button>
+        <div className="flex items-center gap-6">
+          <button onClick={() => (open ? setOpen(false) : scrollToTop())} aria-label="Back to top" className="font-display text-xl font-bold tracking-[-0.03em]">
+            {ME.first}
+            <span className="text-clay">.</span>
+          </button>
+          <span className="hidden lg:block">
+            <Available className="text-xs font-medium text-grey" />
+          </span>
+        </div>
 
         <ul className="hidden items-center gap-1 text-sm font-medium md:flex">
           {LINKS.map((l) => (
             <li key={l.id}>
-              <button onClick={() => go(l.id)} className="group relative overflow-hidden rounded-full px-4 py-2 text-cream/75 transition-colors hover:text-cream">
+              <button onClick={() => go(l.id)} className="rounded-full px-4 py-2 text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink">
                 {l.label}
+                {l.count && <sup className="ml-0.5 text-[0.6rem] text-grey">{pad(l.count)}</sup>}
               </button>
             </li>
           ))}
         </ul>
 
         <div className="flex items-center gap-2">
-          <span className="hidden items-center gap-2 pr-2 text-xs text-cream/70 lg:flex">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-            </span>
-            Available for projects
-          </span>
-          <button onClick={() => go('contact')} className="btn btn-ember hidden !py-2.5 !text-sm md:inline-flex" data-magnetic>
-            Let's talk
+          <button onClick={() => go('contact')} className="btn btn-ink hidden !py-2.5 !text-sm md:inline-flex" data-magnetic>
+            Let's talk <ArrowUpRight size={16} />
           </button>
           <button
             onClick={() => setOpen((o) => !o)}
-            className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full bg-cream text-ink md:hidden"
+            className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full bg-ink text-paper md:hidden"
             aria-expanded={open}
             aria-controls="menu"
             aria-label={open ? 'Close menu' : 'Open menu'}

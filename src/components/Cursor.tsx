@@ -42,8 +42,8 @@ export default function Cursor() {
       ref={dot}
       aria-hidden="true"
       data-hover="false"
-      className={`pointer-events-none fixed left-0 top-0 z-[70] hidden -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-cream text-ink opacity-0 transition-[width,height,background-color] duration-300 [@media(pointer:fine)]:flex ${
-        label ? 'h-24 w-24' : 'h-3 w-3 data-[hover=true]:h-12 data-[hover=true]:w-12 data-[hover=true]:bg-cream/20 data-[hover=true]:backdrop-blur-[2px]'
+      className={`pointer-events-none fixed left-0 top-0 z-[70] hidden -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-ink text-paper opacity-0 transition-[width,height,background-color] duration-300 [@media(pointer:fine)]:flex ${
+        label ? 'h-24 w-24' : 'h-3 w-3 data-[hover=true]:h-12 data-[hover=true]:w-12 data-[hover=true]:bg-ink/10 data-[hover=true]:backdrop-blur-[2px]'
       }`}
     >
       <span className={`text-xs font-semibold uppercase tracking-[0.18em] transition-opacity ${label ? 'opacity-100' : 'opacity-0'}`}>{label}</span>

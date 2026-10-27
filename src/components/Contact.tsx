@@ -1,65 +1,64 @@
-import type { ReactNode } from 'react'
 import { ME } from '../data'
 import { scrollToTop } from '../lib/motion'
-import { Logo } from './Nav'
-import { ArrowUpRight, Chat, GitHub, LinkedIn, Mail } from './ui'
+import { SOCIALS } from './Hero'
+import { Available } from './Nav'
+import { ArrowUpRight } from './ui'
 
 export default function Contact() {
-  // The big button goes to the best channel that is filled in.
-  const primary = ME.email ? `mailto:${ME.email}?subject=New%20website%20project` : ME.whatsapp ? `https://wa.me/${ME.whatsapp}` : ME.github
-  const links = [
-    ME.email && { href: `mailto:${ME.email}`, label: ME.email, icon: <Mail size={18} /> },
-    ME.whatsapp && { href: `https://wa.me/${ME.whatsapp}`, label: 'WhatsApp', icon: <Chat size={18} /> },
-    ME.linkedin && { href: ME.linkedin, label: 'LinkedIn', icon: <LinkedIn size={18} /> },
-    { href: ME.github, label: 'GitHub', icon: <GitHub size={18} /> },
-  ].filter(Boolean) as { href: string; label: string; icon: ReactNode }[]
-
   return (
-    <section id="contact" className="relative overflow-hidden px-5 pb-8 pt-24 sm:px-8 lg:px-12 lg:pt-36">
-      <div aria-hidden="true" className="animate-orb pointer-events-none absolute -bottom-40 left-1/2 h-[40rem] w-[40rem] -translate-x-1/2 rounded-full bg-ember/25 blur-[140px]" />
+    <section id="contact" className="relative overflow-hidden px-4 pb-6 pt-28 sm:px-8 lg:pt-40">
+      <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-24 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-sand/40 blur-[120px]" />
 
-      <div className="relative mx-auto max-w-[90rem]">
-        <span className="eyebrow" data-reveal>
-          Have a project in mind?
+      <div className="relative mx-auto flex max-w-[90rem] flex-col items-center text-center">
+        <span className="chip" data-reveal>
+          <Available />
         </span>
-        <div className="mt-8 grid items-end gap-12 lg:grid-cols-[1fr_auto]">
-          <h2 data-split className="font-display text-[clamp(3rem,9.5vw,10rem)] font-semibold leading-[0.9] tracking-[-0.055em]">
-            Let's make yours the site they <span className="font-serif font-normal italic tracking-[-0.02em] text-ember-soft">book from.</span>
-          </h2>
-          <a
-            href={primary}
-            target={primary.startsWith('mailto') ? undefined : '_blank'}
-            rel="noreferrer"
-            className="group relative flex h-40 w-40 shrink-0 items-center justify-center justify-self-start overflow-hidden rounded-full bg-ember text-ink sm:h-52 sm:w-52 lg:justify-self-end"
-            data-magnetic
-            data-reveal="0.2"
-          >
-            <span aria-hidden="true" className="absolute inset-0 scale-0 rounded-full bg-cream transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100" />
-            <span className="relative flex flex-col items-center gap-1 text-center font-semibold">
-              <ArrowUpRight size={30} className="transition-transform duration-500 group-hover:rotate-45" />
-              Start a project
-            </span>
+        <h2 data-split className="mt-8 max-w-6xl font-display text-[clamp(2.8rem,9vw,9rem)] font-bold uppercase leading-[0.88] tracking-[-0.055em]">
+          Have a project <span className="font-serif font-normal normal-case italic tracking-[-0.02em] text-clay sm:block">in mind?</span>
+        </h2>
+        <p className="mt-6 max-w-lg text-lg text-ink/60" data-reveal="0.1">
+          A website, an app or an AI agent: tell me what you need and I will come back with ideas and a clear plan.
+        </p>
+        <div className="mt-10 flex flex-wrap justify-center gap-3" data-reveal="0.15">
+          <a href={`mailto:${ME.email}?subject=New%20project`} className="btn btn-ink !px-8 !py-4 text-base" data-magnetic>
+            Contact me <ArrowUpRight size={18} />
+          </a>
+          <a href={`https://wa.me/${ME.whatsapp}`} target="_blank" rel="noreferrer" className="btn btn-line !px-8 !py-4 text-base" data-magnetic>
+            WhatsApp me
           </a>
         </div>
 
-        <div className="mt-20 flex flex-wrap gap-3" data-reveal>
-          {links.map((l) => (
-            <a key={l.href} href={l.href} target={l.href.startsWith('mailto') ? undefined : '_blank'} rel="noreferrer" className="btn btn-line" data-magnetic>
-              {l.icon} {l.label}
-            </a>
+        <ul className="mt-14 flex flex-wrap justify-center gap-2" data-reveal="0.2">
+          <li className="chip !bg-ink !py-1.5 !pl-1.5 !text-paper">
+            <picture>
+              <source type="image/avif" srcSet={`/${ME.photo}-640.avif`} />
+              <img src={`/${ME.photo}-640.webp`} alt="" className="h-7 w-7 rounded-full object-cover" loading="lazy" />
+            </picture>
+            {ME.name}
+          </li>
+          {SOCIALS.map((s) => (
+            <li key={s.label}>
+              <a href={s.href} target={s.href.startsWith('mailto') ? undefined : '_blank'} rel="noreferrer" className="chip !py-2 transition-colors hover:border-ink hover:bg-ink hover:text-paper">
+                <s.icon size={15} /> {s.label === 'Email' ? ME.email : s.label}
+              </a>
+            </li>
           ))}
-        </div>
-
-        <footer className="mt-24 flex flex-col gap-6 border-t border-white/10 pt-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-          <Logo />
-          <p>
-            © {new Date().getFullYear()} {ME.name}. Designed and built by hand.
-          </p>
-          <button onClick={() => scrollToTop()} className="self-start text-cream/80 transition-colors hover:text-ember sm:self-auto">
-            Back to top ↑
-          </button>
-        </footer>
+        </ul>
       </div>
+
+      {/* Giant outlined name */}
+      <p aria-hidden="true" className="text-outline-ink relative mt-24 select-none whitespace-nowrap text-center font-display text-[11vw] font-bold uppercase leading-[0.8] tracking-[-0.06em]">
+        {ME.name}
+      </p>
+
+      <footer className="relative mx-auto mt-8 flex max-w-[90rem] flex-col gap-4 border-t border-line pt-6 text-sm text-grey sm:flex-row sm:items-center sm:justify-between">
+        <p>
+          © {new Date().getFullYear()} {ME.name}. Designed and built by hand.
+        </p>
+        <button onClick={() => scrollToTop()} className="self-start text-ink transition-colors hover:text-clay sm:self-auto">
+          Back to top ↑
+        </button>
+      </footer>
     </section>
   )
 }

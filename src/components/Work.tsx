@@ -1,185 +1,175 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
-import { PROJECTS, type Project } from '../data'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { MORE_WORK, PROJECTS, type Category, type Project } from '../data'
 import { gsap, prefersReducedMotion } from '../lib/motion'
-import { ArrowUpRight, GitHub, Shot } from './ui'
+import CaseStudy from './CaseStudy'
+import ProjectMedia from './ProjectMedia'
+import { ArrowUpRight } from './ui'
 
-// Tall enough screens: each case study sticks and the next one slides over it like a stack of prints.
-// Shorter screens and phones: the cards simply follow each other and flip up into place.
-const STACK = '(min-width: 1024px) and (min-height: 760px)'
+type Filter = 'All' | Category
+const FILTERS: Filter[] = ['All', 'Web', 'App', 'AI']
+const count = (f: Filter) => String(f === 'All' ? PROJECTS.length : PROJECTS.filter((p) => p.category === f).length).padStart(2, '0')
+
+// Case studies open as a full-screen panel and get their own URL hash (#work/<id>) so they can be shared.
+const idFromHash = () => {
+  const m = window.location.hash.match(/^#work\/([\w-]+)$/)
+  return m && PROJECTS.some((p) => p.id === m[1]) ? m[1] : null
+}
 
 export default function Work() {
-  const root = useRef<HTMLElement>(null)
+  const [filter, setFilter] = useState<Filter>('All')
+  const [openId, setOpenId] = useState<string | null>(() => idFromHash())
+  const grid = useRef<HTMLDivElement>(null)
+  const first = useRef(true)
+  const list = PROJECTS.filter((p) => filter === 'All' || p.category === filter)
 
+  useEffect(() => {
+    const sync = () => setOpenId(idFromHash())
+    window.addEventListener('popstate', sync)
+    window.addEventListener('hashchange', sync)
+    return () => {
+      window.removeEventListener('popstate', sync)
+      window.removeEventListener('hashchange', sync)
+    }
+  }, [])
+
+  const open = useCallback((id: string) => {
+    history.pushState(null, '', `#work/${id}`)
+    setOpenId(id)
+  }, [])
+  const close = useCallback(() => {
+    if (idFromHash()) history.back()
+    else setOpenId(null)
+  }, [])
+
+  // Cards re-deal when the filter changes.
   useLayoutEffect(() => {
-    if (prefersReducedMotion()) return
+    if (first.current) {
+      first.current = false
+      return
+    }
+    if (prefersReducedMotion() || !grid.current) return
+    const tween = gsap.fromTo(
+      grid.current.children,
+      { y: 60, opacity: 0, rotate: 1.5 },
+      { y: 0, opacity: 1, rotate: 0, duration: 0.8, stagger: 0.07, ease: 'power3.out', clearProps: 'transform' },
+    )
+    return () => void tween.kill()
+  }, [filter])
+
+  // Phones: cards flip up into place as they scroll in.
+  useLayoutEffect(() => {
+    if (prefersReducedMotion() || !grid.current) return
     const mm = gsap.matchMedia()
-    mm.add(STACK, () => {
-      const cards = gsap.utils.toArray<HTMLElement>('[data-case]', root.current)
-      cards.forEach((card, i) => {
-        const next = cards[i + 1]
-        if (!next) return
-        gsap.to(card.querySelector('[data-case-inner]'), {
-          scale: 0.92,
-          filter: 'brightness(0.55)',
-          ease: 'none',
-          scrollTrigger: { trigger: next, start: 'top 85%', end: 'top 12%', scrub: true },
-        })
-      })
-    })
-    mm.add(`not all and ${STACK}`, () => {
-      gsap.utils.toArray<HTMLElement>('[data-case-inner]', root.current).forEach((el) => {
-        gsap.from(el, {
-          rotateX: 18,
-          y: 80,
-          opacity: 0,
-          transformPerspective: 1200,
-          transformOrigin: '50% 100%',
-          duration: 1.2,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 92%', once: true },
-        })
+    mm.add('(max-width: 767px)', () => {
+      gsap.utils.toArray<HTMLElement>('[data-card]', grid.current).forEach((el) => {
+        gsap.from(el, { rotateX: 24, y: 70, opacity: 0, transformPerspective: 1000, transformOrigin: '50% 100%', duration: 1.1, ease: 'back.out(1.2)', scrollTrigger: { trigger: el, start: 'top bottom-=40', once: true } })
       })
     })
     return () => mm.revert()
   }, [])
 
+  const openProject = PROJECTS.find((p) => p.id === openId) ?? null
+
   return (
-    <section id="work" ref={root} className="relative px-3 pb-10 pt-24 sm:px-5 lg:pt-36">
-      <div className="mx-auto max-w-[90rem] px-2 sm:px-3 lg:px-7">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <h2 data-split className="font-display text-[clamp(3rem,9vw,9rem)] font-semibold leading-[0.9] tracking-[-0.05em]">
-            Selected <span className="font-serif font-normal italic tracking-[-0.02em] text-ember-soft">work</span>
-            <sup className="ml-2 align-top text-[0.25em] font-medium tracking-normal text-muted">({String(PROJECTS.length).padStart(2, '0')})</sup>
-          </h2>
-          <p className="max-w-sm text-cream/65" data-reveal>
-            Two complete products, designed and built end to end: from the first sketch to booking flows, dashboards and launch.
-          </p>
+    <section id="work" className="px-4 pb-24 pt-10 sm:px-8 lg:pb-36">
+      <div className="mx-auto max-w-[90rem]">
+        <div className="flex flex-wrap items-end justify-between gap-8 border-t border-line pt-10">
+          <div>
+            <span className="slash" data-reveal>
+              Work
+            </span>
+            <h2 data-split className="mt-5 font-display text-[clamp(3rem,9vw,9rem)] font-bold uppercase leading-[0.86] tracking-[-0.055em]">
+              Selected <span className="font-serif font-normal normal-case italic tracking-[-0.02em] text-clay">work</span>
+            </h2>
+          </div>
+          <div className="flex flex-wrap gap-2" role="tablist" aria-label="Filter projects" data-reveal="0.1">
+            {FILTERS.map((f) => (
+              <button
+                key={f}
+                role="tab"
+                aria-selected={filter === f}
+                onClick={() => setFilter(f)}
+                className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${filter === f ? 'border-ink bg-ink text-paper' : 'border-line bg-white hover:border-ink'}`}
+              >
+                {f} <sup className={`text-[0.6rem] ${filter === f ? 'text-paper/60' : 'text-grey'}`}>{count(f)}</sup>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div ref={grid} className="mt-14 grid gap-x-8 gap-y-14 md:grid-cols-2 md:gap-y-20">
+          {list.map((p, i) => (
+            <ProjectCard key={p.id} project={p} number={PROJECTS.indexOf(p) + 1} offset={i % 2 === 1} onOpen={() => open(p.id)} />
+          ))}
+        </div>
+
+        {/* Smaller repos */}
+        <div className="mt-24 border-t border-line pt-8" data-reveal>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-grey">More on GitHub</p>
+          <ul className="mt-4 divide-y divide-line">
+            {MORE_WORK.map((m) => (
+              <li key={m.name}>
+                <a href={m.href} target="_blank" rel="noreferrer" className="group flex items-center justify-between gap-6 py-5">
+                  <span>
+                    <span className="font-display text-xl font-semibold tracking-[-0.02em] transition-colors group-hover:text-clay sm:text-2xl">{m.name}</span>
+                    <span className="mt-1 block text-sm text-grey">{m.text}</span>
+                  </span>
+                  <ArrowUpRight size={22} className="shrink-0 transition-transform duration-300 group-hover:rotate-45" />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
-      <div className="mx-auto mt-14 flex max-w-[90rem] flex-col gap-6 lg:mt-20 [@media(min-width:1024px)_and_(min-height:760px)]:gap-[12vh]">
-        {PROJECTS.map((p, i) => (
-          <CaseStudy key={p.id} project={p} order={i} />
-        ))}
-      </div>
+      {openProject && <CaseStudy project={openProject} onClose={close} onOpen={open} />}
     </section>
   )
 }
 
-function CaseStudy({ project: p, order }: { project: Project; order: number }) {
+function ProjectCard({ project: p, number, offset, onOpen }: { project: Project; number: number; offset: boolean; onOpen: () => void }) {
   const [shot, setShot] = useState(0)
-  const frame = useRef<HTMLAnchorElement>(null)
+  const timer = useRef(0)
 
-  // Cycle through the project's screens, but only while the frame is on screen.
-  useEffect(() => {
-    if (prefersReducedMotion() || !frame.current) return
-    let id = 0
-    const io = new IntersectionObserver(([e]) => {
-      window.clearInterval(id)
-      if (e.isIntersecting) id = window.setInterval(() => setShot((s) => (s + 1) % p.shots.length), 3200)
-    })
-    io.observe(frame.current)
-    return () => {
-      io.disconnect()
-      window.clearInterval(id)
-    }
-  }, [p.shots.length])
+  // On hover the card flicks through the project's screens.
+  const start = () => {
+    if (p.shots.length < 2 || prefersReducedMotion()) return
+    window.clearInterval(timer.current)
+    timer.current = window.setInterval(() => setShot((s) => (s + 1) % p.shots.length), 1400)
+  }
+  const stop = () => window.clearInterval(timer.current)
+  useEffect(() => stop, [])
 
-  const t = p.theme
   return (
-    <article
-      data-case
-      className="[@media(min-width:1024px)_and_(min-height:760px)]:sticky [@media(min-width:1024px)_and_(min-height:760px)]:top-[var(--case-top)]"
-      style={{ '--case-top': `calc(5.5rem + ${order * 18}px)` } as CSSProperties}
-      aria-labelledby={`${p.id}-title`}
-    >
-      <div
-        data-case-inner
-        className="origin-top overflow-hidden rounded-[2rem] p-5 shadow-[0_-30px_80px_-40px_rgba(0,0,0,0.9)] sm:p-8 lg:p-9"
-        style={{ background: t.bg, color: t.fg }}
-      >
-        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 [@media(min-width:1024px)_and_(min-height:760px)]:min-h-[calc(100svh-12rem)]">
-          {/* Text */}
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between text-sm" style={{ color: t.muted }}>
-              <span className="font-medium">
-                {p.index} / {p.sector}
-              </span>
-              <span>{p.year} · Concept build</span>
-            </div>
-            <h3 id={`${p.id}-title`} className="mt-6 font-display text-5xl font-semibold leading-[0.95] tracking-[-0.045em] sm:text-7xl lg:mt-4 lg:text-6xl 2xl:text-7xl">
-              {p.name}
-            </h3>
-            <p className="mt-3 font-serif text-2xl italic" style={{ color: t.accent }}>
-              {p.kind}
-            </p>
-            <p className="mt-6 max-w-lg leading-relaxed lg:mt-4" style={{ color: t.muted }}>
-              {p.problem}
-            </p>
-            <ul className="mt-6 space-y-2.5 border-t pt-6 text-[0.95rem] lg:mt-5 lg:space-y-2 lg:pt-5" style={{ borderColor: t.line }}>
-              {p.features.map((f) => (
-                <li key={f} className="flex gap-3">
-                  <span className="mt-[0.55em] h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: t.accent }} />
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-6 flex flex-wrap gap-2 lg:mt-5" style={{ color: t.fg }}>
-              {p.stack.map((s) => (
-                <span key={s} className="chip" style={{ borderColor: t.line }}>
-                  {s}
-                </span>
-              ))}
-            </div>
-            <div className="mt-8 flex flex-wrap gap-3 lg:mt-auto lg:pt-6">
-              <a href={p.live} target="_blank" rel="noreferrer" className="btn" style={{ background: t.fg, color: t.bg }} data-magnetic>
-                Visit live site <ArrowUpRight size={18} />
-              </a>
-              <a href={p.code} target="_blank" rel="noreferrer" className="btn border" style={{ borderColor: t.line }} data-magnetic>
-                <GitHub size={18} /> Code
-              </a>
-            </div>
+    <article data-card className={offset ? 'md:mt-28' : ''}>
+      <button onClick={onOpen} onMouseEnter={start} onMouseLeave={stop} className="group block w-full text-left" data-cursor="View" aria-label={`Open the ${p.name} case study`}>
+        <div className="relative aspect-[5/4] overflow-hidden rounded-[1.5rem]">
+          <div className="absolute inset-0 transition-transform duration-[1.2s] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]">
+            <ProjectMedia project={p} shot={shot} />
           </div>
-
-          {/* Screens */}
-          <div className="relative order-first pb-10 lg:order-none lg:self-center lg:pb-14">
-            <a
-              ref={frame}
-              href={p.live}
-              target="_blank"
-              rel="noreferrer"
-              data-cursor="Visit"
-              aria-label={`Open the ${p.name} live site`}
-              className="group block overflow-hidden rounded-xl bg-black/30 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.6)] ring-1 ring-black/10 sm:rounded-2xl"
-            >
-              <div className="flex items-center gap-2 bg-black/80 px-4 py-2.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-                <span className="mx-auto truncate rounded-md bg-white/10 px-3 py-0.5 text-[0.7rem] text-white/60">{p.live.replace('https://', '')}</span>
-              </div>
-              <div className="relative aspect-[16/10] overflow-hidden">
-                {p.shots.map((s, i) => (
-                  <Shot
-                    key={s}
-                    name={s}
-                    sizes="(min-width: 1024px) 50vw, 92vw"
-                    className={`absolute inset-0 h-full w-full object-cover object-top transition-[opacity,transform] duration-[1.1s] ease-out group-hover:scale-[1.03] ${i === shot ? 'opacity-100' : 'opacity-0'}`}
-                  />
-                ))}
-              </div>
-            </a>
-            <div className="absolute bottom-0 right-3 w-[26%] min-w-24 max-w-44 animate-float overflow-hidden rounded-[1.4rem] border-[5px] border-black bg-black shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] sm:right-6">
-              <Shot name={p.mobile} mobile sizes="180px" className="aspect-[390/844] w-full object-cover object-top" />
-            </div>
-            <div className="mt-4 flex gap-1.5" aria-hidden="true">
-              {p.shots.map((s, i) => (
-                <span key={s} className="h-1 w-6 rounded-full transition-colors duration-500" style={{ background: i === shot ? t.accent : t.line }} />
-              ))}
-            </div>
-          </div>
+          <span className="absolute left-4 top-4 z-10 rounded-full bg-paper/90 px-3 py-1 text-xs font-semibold text-ink backdrop-blur">{p.category}</span>
+          <span
+            className={`absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold backdrop-blur ${
+              p.status === 'Live' ? 'bg-emerald-500 text-white' : 'bg-ink/70 text-paper'
+            }`}
+          >
+            {p.status === 'Live' && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
+            {p.status}
+          </span>
         </div>
-      </div>
+        <div className="mt-5 flex items-start justify-between gap-6">
+          <div>
+            <p className="text-sm text-grey">
+              {String(number).padStart(2, '0')} · {p.kind}
+            </p>
+            <h3 className="mt-1 font-display text-4xl font-bold uppercase tracking-[-0.045em] sm:text-5xl">{p.name}</h3>
+            <p className="mt-2 max-w-md text-ink/65">{p.outcome}</p>
+          </div>
+          <span className="mt-6 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-line transition-all duration-500 group-hover:rotate-45 group-hover:border-ink group-hover:bg-ink group-hover:text-paper">
+            <ArrowUpRight size={20} />
+          </span>
+        </div>
+      </button>
     </article>
   )
 }
