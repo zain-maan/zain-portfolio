@@ -7,7 +7,22 @@ const FACTS = [
 ]
 
 function Portrait() {
-  if (ME.photo) return <img src={ME.photo} alt={`Portrait of ${ME.name}`} className="h-full w-full object-cover" />
+  if (ME.photo) {
+    const set = (ext: string) => `/${ME.photo}-640.${ext} 640w, /${ME.photo}-1200.${ext} 1200w`
+    return (
+      <picture className="block h-full w-full">
+        <source type="image/avif" srcSet={set('avif')} sizes="(min-width: 1024px) 34vw, 92vw" />
+        <img
+          src={`/${ME.photo}-640.webp`}
+          srcSet={set('webp')}
+          sizes="(min-width: 1024px) 34vw, 92vw"
+          alt={`Portrait of ${ME.name}`}
+          loading="lazy"
+          className="h-full w-full object-cover object-[50%_30%]"
+        />
+      </picture>
+    )
+  }
   // Until a photo is added: a warm gradient with a monogram, so the layout still looks finished.
   const initials = ME.name
     .split(' ')

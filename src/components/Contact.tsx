@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { ME } from '../data'
 import { scrollToTop } from '../lib/motion'
 import { Logo } from './Nav'
-import { ArrowUpRight, Chat, GitHub, Mail } from './ui'
+import { ArrowUpRight, Chat, GitHub, LinkedIn, Mail } from './ui'
 
 export default function Contact() {
   // The big button goes to the best channel that is filled in.
@@ -10,6 +10,7 @@ export default function Contact() {
   const links = [
     ME.email && { href: `mailto:${ME.email}`, label: ME.email, icon: <Mail size={18} /> },
     ME.whatsapp && { href: `https://wa.me/${ME.whatsapp}`, label: 'WhatsApp', icon: <Chat size={18} /> },
+    ME.linkedin && { href: ME.linkedin, label: 'LinkedIn', icon: <LinkedIn size={18} /> },
     { href: ME.github, label: 'GitHub', icon: <GitHub size={18} /> },
   ].filter(Boolean) as { href: string; label: string; icon: ReactNode }[]
 

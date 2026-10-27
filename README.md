@@ -1,6 +1,6 @@
 # Portfolio
 
-Personal portfolio of Zain Maan, web designer and developer. Dark, editorial design with an intro counter, stacking case-study cards, scroll reveals, a magnetic cursor and smooth scrolling.
+Personal portfolio of Zain Ul Abideen, web designer and developer. Dark, editorial design with an intro counter, stacking case-study cards, scroll reveals, a magnetic cursor and smooth scrolling.
 
 **Projects shown:** [Lumen Stay](https://lumen-stay.vercel.app) · [Glow Studio](https://glow-studio-olive.vercel.app)
 

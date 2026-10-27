@@ -1,14 +1,15 @@
 // Everything personal lives here, so the site can be updated without touching components.
 export const ME = {
-  name: 'Zain Maan',
+  name: 'Zain Ul Abideen',
   first: 'Zain',
   role: 'Web designer & developer',
   // Add an email or WhatsApp number (digits only, with country code) to show those buttons.
-  email: '',
-  whatsapp: '',
+  email: 'cs.zainulabideen@gmail.com',
+  whatsapp: '923474170955',
   github: 'https://github.com/zain-maan',
-  // Drop your photo in public/ (e.g. public/me.jpg) and set its path here.
-  photo: '',
+  linkedin: 'https://www.linkedin.com/in/zainulabideen113',
+  // Name of the photo in public/, exported as <photo>-640 and <photo>-1200 in AVIF and WebP.
+  photo: 'me',
 }
 
 export type Project = {
