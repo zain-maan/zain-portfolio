@@ -108,7 +108,7 @@ export default function Hero() {
         {/* The entrance animates this inner layer; the scroll drift moves the outer one, so they never fight. */}
         <div ref={photoIn} className="relative h-full lg:h-auto">
           <Cutout variant="-grey" className="mx-auto block h-full w-auto max-w-none object-contain object-bottom lg:h-auto lg:w-full" />
-          <div className="absolute inset-0 [clip-path:circle(var(--r)_at_var(--x)_var(--y))]">
+          <div className="absolute inset-0 lg:[clip-path:circle(var(--r)_at_var(--x)_var(--y))]">
             <Cutout className="mx-auto block h-full w-auto max-w-none object-contain object-bottom lg:h-auto lg:w-full" />
           </div>
         </div>
