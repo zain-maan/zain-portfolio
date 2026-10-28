@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.zainabideen.dev" }],
+      "destination": "https://zainabideen.dev/$1",
+      "permanent": true
+    }
+  ]
+}
