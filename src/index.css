@@ -177,12 +177,6 @@ body {
   }
 }
 
-/* A paper-coloured edge around solid letters, so the name stays readable where it overlaps the photo. */
-.text-halo {
-  -webkit-text-stroke: max(5px, 0.05em) var(--color-paper);
-  paint-order: stroke fill;
-}
-
 @layer components {
   /* Section labels in the "/SERVICE" style */
   .slash {
