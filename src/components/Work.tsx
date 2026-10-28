@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { PROJECTS, type Category, type Project } from '../data'
 import { gsap, prefersReducedMotion } from '../lib/motion'
 import CaseStudy from './CaseStudy'
+import ProjectCta from './ProjectCta'
 import ProjectMedia from './ProjectMedia'
 import { ArrowUpRight } from './ui'
 
@@ -71,7 +72,7 @@ export default function Work() {
   const openProject = PROJECTS.find((p) => p.id === openId) ?? null
 
   return (
-    <section id="work" className="px-4 pb-24 pt-10 sm:px-8 lg:pb-36">
+    <section id="work" className="px-4 pb-10 pt-10 sm:px-8 sm:pb-24 lg:pb-36">
       <div className="mx-auto max-w-[90rem]">
         <div className="flex flex-wrap items-end justify-between gap-8 border-t border-line pt-10">
           <div>
@@ -132,10 +133,10 @@ function ProjectCard({ project: p, number, offset, onOpen }: { project: Project;
           <span className="absolute left-4 top-4 z-10 rounded-full bg-paper/90 px-3 py-1 text-xs font-semibold text-ink backdrop-blur">{p.category}</span>
           <span
             className={`absolute right-4 top-4 z-10 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold backdrop-blur ${
-              p.status === 'Live' ? 'bg-emerald-500 text-white' : 'bg-ink/70 text-paper'
+              p.status === 'Live demo' ? 'bg-emerald-600 text-white' : 'bg-ink/75 text-paper'
             }`}
           >
-            {p.status === 'Live' && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
+            {p.status === 'Live demo' && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
             {p.status}
           </span>
         </div>
@@ -152,6 +153,7 @@ function ProjectCard({ project: p, number, offset, onOpen }: { project: Project;
           </span>
         </div>
       </button>
+      <ProjectCta project={p} className="mt-4" />
     </article>
   )
 }

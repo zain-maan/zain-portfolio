@@ -159,6 +159,30 @@ body {
   paint-order: stroke fill;
 }
 
+/* Footer name: ink, clay and sand slide through the letters. */
+.text-flow {
+  background: linear-gradient(100deg, var(--color-ink) 0%, var(--color-clay) 25%, var(--color-sand) 40%, var(--color-clay) 55%, var(--color-ink) 75%, var(--color-ink) 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: flow 7s linear infinite;
+}
+@keyframes flow {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+
+/* A paper-coloured edge around solid letters, so the name stays readable where it overlaps the photo. */
+.text-halo {
+  -webkit-text-stroke: max(5px, 0.05em) var(--color-paper);
+  paint-order: stroke fill;
+}
+
 @layer components {
   /* Section labels in the "/SERVICE" style */
   .slash {
@@ -258,6 +282,7 @@ body {
   .animate-launch,
   .animate-ring,
   .animate-bob,
+  .text-flow,
   .animate-marquee {
     animation: none;
   }

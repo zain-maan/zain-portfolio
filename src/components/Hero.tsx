@@ -7,9 +7,9 @@ const cut = (variant: string, ext: string) => `/${ME.cutout}${variant}-720.${ext
 
 function Cutout({ variant = '', className = '' }: { variant?: string; className?: string }) {
   return (
-    <picture className="flex h-full justify-center lg:block lg:h-auto">
-      <source type="image/avif" srcSet={cut(variant, 'avif')} sizes="(min-width: 1024px) 46vw, 100vw" />
-      <img src={`/${ME.cutout}${variant}-720.webp`} srcSet={cut(variant, 'webp')} sizes="(min-width: 1024px) 46vw, 100vw" alt="" fetchPriority="high" className={className} />
+    <picture className="flex h-full justify-center">
+      <source type="image/avif" srcSet={cut(variant, 'avif')} sizes="(min-width: 1024px) 50vw, 100vw" />
+      <img src={`/${ME.cutout}${variant}-720.webp`} srcSet={cut(variant, 'webp')} sizes="(min-width: 1024px) 50vw, 100vw" alt="" fetchPriority="high" className={className} />
     </picture>
   )
 }
@@ -89,12 +89,12 @@ export default function Hero() {
       {/* Soft warm light behind the portrait */}
       <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[30%] h-[70vh] w-[70vh] -translate-x-1/2 rounded-full bg-sand/45 blur-[110px]" />
 
-      {/* The name, behind the portrait */}
-      <h1 className="relative z-0 px-4 font-display font-bold uppercase leading-[0.82] tracking-[-0.055em] sm:px-8" aria-label={ME.name}>
+      {/* The name sits in front of the portrait, so it can always be read in full */}
+      <h1 className="pointer-events-none relative z-20 px-4 font-display font-bold uppercase leading-[0.82] tracking-[-0.055em] sm:px-8" aria-label={ME.name}>
         <span data-name-a className="text-outline-ink block text-[clamp(4.5rem,23vw,9rem)] sm:text-[clamp(5rem,17vw,19rem)]" aria-hidden="true">
           <Letters text={ME.first} />
         </span>
-        <span data-name-b className="block text-right text-[clamp(3rem,15.5vw,6rem)] sm:text-[clamp(4rem,12.5vw,14rem)]" aria-hidden="true">
+        <span data-name-b className="text-halo block text-right text-[clamp(3rem,15.5vw,6rem)] sm:text-[clamp(4rem,12.5vw,14rem)]" aria-hidden="true">
           <Letters text={ME.last} />
         </span>
       </h1>
@@ -102,21 +102,21 @@ export default function Hero() {
       {/* Portrait: greyscale, with a colour reveal under the pointer */}
       <div
         ref={photo}
-        className="pointer-events-none relative z-10 -mt-6 min-h-0 w-full flex-1 lg:absolute lg:bottom-0 lg:left-1/2 lg:mt-0 lg:w-[min(46vw,46rem,64svh)] lg:flex-none lg:-translate-x-1/2"
+        className="pointer-events-none relative z-10 -mt-6 min-h-0 w-full flex-1 overflow-hidden lg:-mt-[2.5vw]"
         style={{ '--x': '50%', '--y': '40%', '--r': '0px' } as CSSProperties}
       >
         {/* The entrance animates this inner layer; the scroll drift moves the outer one, so they never fight. */}
-        <div ref={photoIn} className="relative h-full lg:h-auto">
-          <Cutout variant="-grey" className="mx-auto block h-full w-auto max-w-none object-contain object-bottom lg:h-auto lg:w-full" />
+        <div ref={photoIn} className="relative h-full">
+          <Cutout variant="-grey" className="mx-auto block h-full w-auto max-w-none object-contain object-bottom" />
           <div className="absolute inset-0 [clip-path:circle(var(--r)_at_var(--x)_var(--y))]">
-            <Cutout className="mx-auto block h-full w-auto max-w-none object-contain object-bottom lg:h-auto lg:w-full" />
+            <Cutout className="mx-auto block h-full w-auto max-w-none object-contain object-bottom" />
           </div>
         </div>
-        <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-paper via-paper/70 to-transparent" />
+        <div className="absolute inset-x-0 -bottom-px h-1/4 bg-gradient-to-t from-paper via-paper/70 to-transparent" />
       </div>
 
       {/* Bottom row */}
-      <div className="relative z-20 -mt-10 grid gap-6 bg-gradient-to-t from-paper via-paper to-transparent px-4 pb-6 pt-10 sm:px-8 sm:pb-8 lg:mt-auto lg:grid-cols-[1fr_auto] lg:items-end lg:bg-none lg:pt-0">
+      <div className="relative z-20 -mt-10 grid gap-6 bg-gradient-to-t from-paper via-paper to-transparent px-4 pb-6 pt-10 sm:px-8 sm:pb-8 lg:absolute lg:inset-x-0 lg:bottom-0 lg:mt-0 lg:grid-cols-[1fr_auto] lg:items-end lg:bg-none lg:pt-0">
         <div className="max-w-sm" data-hero-fade>
           <h2 className="font-display text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">{ME.role}</h2>
           <p className="mt-2 text-[0.95rem] leading-relaxed text-ink/65">{ME.pitch}</p>

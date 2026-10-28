@@ -100,9 +100,13 @@ export default function Contact() {
         </ul>
       </div>
 
-      {/* Giant outlined name */}
-      <p aria-hidden="true" className="text-outline-ink relative mt-24 select-none whitespace-nowrap text-center font-display text-[11vw] font-bold uppercase leading-[0.8] tracking-[-0.06em]">
-        {ME.name}
+      {/* Giant name: each word set apart, with a slow colour gradient flowing through the letters */}
+      <p aria-hidden="true" className="relative mt-16 flex select-none justify-center gap-x-[0.22em] whitespace-nowrap font-display text-[10.5vw] font-bold uppercase leading-[0.85] tracking-[-0.05em] sm:mt-24">
+        {ME.name.split(' ').map((w) => (
+          <span key={w} className="text-flow pb-[0.06em]">
+            {w}
+          </span>
+        ))}
       </p>
 
       <footer className="relative mx-auto mt-8 flex max-w-[90rem] flex-col gap-4 border-t border-line pt-6 text-sm text-grey sm:flex-row sm:items-center sm:justify-between">

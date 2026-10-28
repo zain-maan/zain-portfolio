@@ -51,7 +51,7 @@ export default function Services() {
             </h2>
           </div>
           <p className="max-w-sm text-ink/60" data-reveal="0.1">
-            One person from the first call to launch: design, frontend, backend and the AI that ties it together.
+            From the first call to launch: design, frontend, backend and the AI that ties it all together.
           </p>
         </div>
 
@@ -70,7 +70,7 @@ export default function Services() {
                   <span
                     data-service-title
                     className={`font-display text-[clamp(1.7rem,4.6vw,4.2rem)] font-bold uppercase leading-[0.95] tracking-[-0.045em] transition-[color,transform] duration-500 ${
-                      isOpen ? 'translate-x-2 text-ink' : 'text-ink max-lg:translate-x-0 lg:text-ink/35'
+                      isOpen ? 'translate-x-2 text-ink' : 'text-ink max-lg:translate-x-0 lg:text-ink/45'
                     }`}
                   >
                     {s.title}

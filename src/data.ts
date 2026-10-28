@@ -15,13 +15,17 @@ export const ME = {
   cutout: 'me-cut',
 }
 
+// WhatsApp chat link, optionally with a message already typed in.
+export const waLink = (text?: string) => `https://wa.me/${ME.whatsapp}${text ? `?text=${encodeURIComponent(text)}` : ''}`
+
 export type Category = 'Web' | 'App' | 'AI'
 
 export type Project = {
   id: string
   name: string
   category: Category
-  status: 'Live' | 'Case study'
+  // Every project is a self-built demo with sample data, not client work.
+  status: 'Live demo' | 'Demo'
   year: string
   kind: string
   outcome: string
@@ -34,6 +38,7 @@ export type Project = {
   shots: string[] // desktop screenshots in public/work
   mobile?: string
   visual?: 'mindai' // a designed visual instead of screenshots
+  team?: string // shown on the case study when the project was not built solo
   tone: string // card background behind the screens
 }
 
@@ -42,10 +47,10 @@ export const PROJECTS: Project[] = [
     id: 'glow',
     name: 'Glow Studio',
     category: 'Web',
-    status: 'Live',
+    status: 'Live demo',
     year: '2026',
     kind: 'Salon booking + owner dashboard',
-    outcome: 'Online booking for a Dubai salon, with a dashboard that runs the whole day.',
+    outcome: 'Demo booking site + owner dashboard for salons.',
     problem: 'Most salons still book over WhatsApp and calls: clients wait for replies, stylists get double-booked and the owner has no clear numbers.',
     solution:
       'Clients pick a treatment, stylist and a real free slot in under a minute. The owner gets a dashboard for revenue, appointments, clients and team occupancy, on desktop and phone.',
@@ -66,10 +71,10 @@ export const PROJECTS: Project[] = [
     id: 'lumen',
     name: 'Lumen Stay',
     category: 'Web',
-    status: 'Live',
+    status: 'Live demo',
     year: '2026',
     kind: 'Resort website + direct booking',
-    outcome: 'A boutique resort site where guests book direct in under two minutes.',
+    outcome: 'Demo resort website where guests can book direct in under two minutes.',
     problem:
       'Small hotels hand 15 to 25% of every booking to OTAs like Booking.com, because their own websites feel dated and booking is hard.',
     solution:
@@ -92,10 +97,10 @@ export const PROJECTS: Project[] = [
     id: 'corpmind',
     name: 'CorpMind',
     category: 'AI',
-    status: 'Case study',
+    status: 'Demo',
     year: '2026',
     kind: 'Multi-agent company knowledge assistant',
-    outcome: 'Employees ask one chat; the right department agent answers with sources.',
+    outcome: 'Demo company assistant: staff ask one chat, the right department agent answers with sources.',
     problem: 'Staff waste hours searching emails, PDFs and policy documents, and sensitive answers must stay within the right roles and branches.',
     solution:
       'An orchestrator routes each question to an HR, Finance, IT or Legal agent, which answers only from approved company documents with citations. Role- and branch-based access keeps data where it belongs, and leave or expense requests are drafted automatically.',
@@ -106,7 +111,8 @@ export const PROJECTS: Project[] = [
       'AI-drafted leave and expense requests with approvals',
       'Multi-company, multi-branch, private chat history',
     ],
-    stack: ['FastAPI', 'Multi-agent', 'Qdrant', 'FastEmbed', 'PostgreSQL', 'Docker'],
+    stack: ['FastAPI', 'Multi-agent', 'Groq (LLM)', 'Qdrant', 'FastEmbed', 'PostgreSQL', 'Docker'],
+    team: 'Built with a small team',
     code: 'https://github.com/zain-maan/CorpMind',
     shots: ['corp-desk', 'corp-chat', 'corp-dash', 'corp-agents', 'corp-library'],
     tone: '#0c2b2a',
@@ -115,10 +121,10 @@ export const PROJECTS: Project[] = [
     id: 'mindai',
     name: 'MindAI',
     category: 'App',
-    status: 'Case study',
+    status: 'Demo',
     year: '2026',
     kind: 'AI study app · web + Android',
-    outcome: 'A study companion that turns any document into chat, quizzes and flashcards.',
+    outcome: 'Demo study app (web + Android) that turns any document into chat, quizzes and flashcards.',
     problem: 'Students jump between PDFs, notes, quiz apps and YouTube, and still do not know which topics they are weak at.',
     solution:
       'One app, on the web and as an Android app: upload notes or a lecture and MindAI answers with citations, builds adaptive quizzes and spaced-repetition flashcards, and tracks weak topics. Study rooms let classmates learn together in real time.',
@@ -139,10 +145,10 @@ export const PROJECTS: Project[] = [
     id: 'aria',
     name: 'Aria',
     category: 'AI',
-    status: 'Case study',
+    status: 'Demo',
     year: '2026',
     kind: 'AI voice receptionist for clinics',
-    outcome: 'Answers every call, books the real calendar and flags emergencies, 24/7.',
+    outcome: 'Demo AI voice receptionist for clinics: answers calls, books appointments and flags emergencies.',
     problem: 'Clinics miss calls during busy hours and after closing, and every missed call is a lost patient.',
     solution:
       'Aria answers in a natural voice, checks live availability, books, moves or cancels appointments, answers insurance and price questions, and sends red-flag symptoms to the team. Every call lands in a dashboard with a transcript.',
@@ -164,10 +170,10 @@ export const PROJECTS: Project[] = [
     id: 'zarri',
     name: 'Zarri',
     category: 'AI',
-    status: 'Case study',
+    status: 'Demo',
     year: '2026',
     kind: 'WhatsApp AI sales agent',
-    outcome: 'Sells on WhatsApp in Urdu, Roman Urdu and English, day and night.',
+    outcome: 'Demo WhatsApp sales agent that sells in Urdu, Roman Urdu and English.',
     problem: 'Small brands in Pakistan sell on WhatsApp, and messages that arrive at night or in an Eid rush wait hours, so customers buy elsewhere.',
     solution:
       'Zoya, the AI agent, replies in the customer’s own language, checks real stock and prices, builds the cart and places cash-on-delivery orders, and hands complaints to a person. The owner sees every chat and order live.',
@@ -213,9 +219,9 @@ export const SKILLS = [
   { group: 'Frontend', items: ['React 19', 'TypeScript', 'Vite', 'Tailwind CSS', 'GSAP', 'Three.js', 'Matter.js', 'Lenis'], usedIn: ['Lumen Stay', 'Glow Studio', 'Aria'] },
   { group: 'Backend', items: ['Python', 'FastAPI', 'PostgreSQL', 'SQLite', 'Alembic', 'JWT auth', 'WebSockets', 'Docker'], usedIn: ['CorpMind', 'MindAI', 'Zarri'] },
   { group: 'AI', items: ['LLM agents', 'Tool calling', 'Multi-agent', 'RAG', 'LangChain', 'LangGraph', 'Qdrant', 'FAISS', 'Groq', 'OpenAI', 'Whisper', 'Text-to-speech'], usedIn: ['Aria', 'Zarri', 'CorpMind', 'MindAI'] },
-  { group: 'Automation', items: ['n8n', 'WhatsApp Cloud API', 'Google Workspace APIs', 'Webhooks'], usedIn: ['Zarri', 'AI Assistant'] },
-  { group: 'Mobile', items: ['Flutter', 'Dart', 'Capacitor', 'Android', 'PWA'], usedIn: ['MindAI', 'Flutter apps'] },
-  { group: 'Deploy', items: ['Vercel', 'Render', 'Hugging Face', 'Docker', 'Git', 'GitHub'], usedIn: ['All live sites'] },
+  { group: 'Automation', items: ['n8n', 'WhatsApp Cloud API', 'Google Workspace APIs', 'Webhooks'], usedIn: ['Zarri'] },
+  { group: 'Mobile', items: ['Flutter', 'Dart', 'Capacitor', 'Android', 'PWA'], usedIn: ['MindAI'] },
+  { group: 'Deploy', items: ['Vercel', 'Render', 'Hugging Face', 'Docker', 'Git', 'GitHub'], usedIn: ['Glow Studio', 'Lumen Stay', 'Aria'] },
 ]
 
 export const PROCESS = [

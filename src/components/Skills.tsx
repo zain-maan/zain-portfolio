@@ -140,7 +140,7 @@ export default function Skills() {
               Tools I <span className="font-serif font-normal normal-case italic tracking-[-0.02em] text-sand">ship</span> with
             </h2>
           </div>
-          <p className="max-w-sm text-paper/55" data-reveal="0.1">
+          <p className="max-w-sm text-paper/70" data-reveal="0.1">
             The tools I use day to day, with the projects that show them.
           </p>
         </div>
@@ -157,7 +157,7 @@ export default function Skills() {
                   {g.group}
                   <span className="text-sm font-medium tracking-normal text-paper/35 lg:hidden">{String(i + 1).padStart(2, '0')}</span>
                 </h3>
-                <p className="mt-1 text-sm text-paper/45">Used in {g.usedIn.join(', ')}</p>
+                <p className="mt-1 text-sm text-paper/65">Used in {g.usedIn.join(', ')}</p>
               </div>
               <div className="flex flex-wrap content-start gap-2">
                 {g.items.map((s) => (
@@ -208,7 +208,7 @@ export default function Skills() {
                       {p.title}
                     </span>
                   </h3>
-                  <p data-step-text className="mt-3 max-w-xs text-paper/55">
+                  <p data-step-text className="mt-3 max-w-xs text-paper/70">
                     {p.text}
                   </p>
                   {/* Light sweep (phones) */}

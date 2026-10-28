@@ -56,7 +56,7 @@ export default function Loader() {
   if (done) return null
   return (
     <div ref={root} className="fixed inset-0 z-[80] flex flex-col justify-between bg-ink p-6 text-paper sm:p-10" style={{ clipPath: 'inset(0% 0% 0% 0%)' }}>
-      <div className="flex justify-between text-xs font-medium uppercase tracking-[0.2em] text-paper/50">
+      <div className="flex justify-between text-xs font-medium uppercase tracking-[0.2em] text-paper/60">
         <span>Portfolio</span>
         <span>{ME.role}</span>
       </div>

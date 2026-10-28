@@ -1,6 +1,7 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
-import { PROJECTS, type Project } from '../data'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { PROJECTS, waLink, type Project } from '../data'
 import { gsap, prefersReducedMotion, setScrollLocked } from '../lib/motion'
+import Lightbox, { type LightboxItem } from './Lightbox'
 import ProjectMedia from './ProjectMedia'
 import { ArrowUpRight, GitHub, Shot } from './ui'
 
@@ -8,11 +9,15 @@ import { ArrowUpRight, GitHub, Shot } from './ui'
 export default function CaseStudy({ project: p, onClose, onOpen }: { project: Project; onClose: () => void; onOpen: (id: string) => void }) {
   const panel = useRef<HTMLDivElement>(null)
   const next = PROJECTS[(PROJECTS.indexOf(p) + 1) % PROJECTS.length]
+  // Every screen of the project, desktop first then the phone, for the gallery and the full-screen viewer.
+  const screens: LightboxItem[] = [...p.shots.map((name) => ({ name })), ...(p.mobile ? [{ name: p.mobile, mobile: true }] : [])]
+  const [zoom, setZoom] = useState<number | null>(null)
+  useEffect(() => setZoom(null), [p.id])
 
   useEffect(() => {
     setScrollLocked(true)
     document.body.style.overflow = 'hidden'
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && !document.querySelector('[aria-label="Screenshot viewer"]') && onClose()
     window.addEventListener('keydown', onKey)
     return () => {
       setScrollLocked(false)
@@ -38,7 +43,7 @@ export default function CaseStudy({ project: p, onClose, onOpen }: { project: Pr
     ['Type', p.kind],
     ['Category', p.category],
     ['Year', p.year],
-    ['Status', p.status === 'Live' ? 'Live site' : 'Case study'],
+    ['Status', 'Demo project · sample data'],
   ]
 
   return (
@@ -68,6 +73,11 @@ export default function CaseStudy({ project: p, onClose, onOpen }: { project: Pr
         <p className="mt-4 font-serif text-2xl italic text-clay sm:text-4xl" data-cs-in>
           {p.outcome}
         </p>
+        {p.team && (
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1 text-sm font-medium" data-cs-in>
+            <span className="h-1.5 w-1.5 rounded-full bg-clay" /> {p.team}
+          </p>
+        )}
 
         <div className="mt-10 grid gap-6 border-y border-line py-6 sm:grid-cols-4" data-cs-in>
           {meta.map(([k, v]) => (
@@ -89,13 +99,26 @@ export default function CaseStudy({ project: p, onClose, onOpen }: { project: Pr
               <GitHub size={18} /> View code
             </a>
           )}
-          {!p.live && !p.code && <p className="text-sm text-grey">Private client-style build · demo on request</p>}
+          {!p.live && !p.code && <p className="text-sm text-grey">Code is private · a walkthrough is available on request</p>}
         </div>
 
         {/* Cover */}
-        <div className="relative mt-12 aspect-[16/11] overflow-hidden rounded-[1.75rem] sm:aspect-[16/9]" data-cs-in>
-          <ProjectMedia project={p} large />
-        </div>
+        {screens.length ? (
+          <button
+            onClick={() => setZoom(0)}
+            className="relative mt-12 block aspect-[16/11] w-full overflow-hidden rounded-[1.75rem] sm:aspect-[16/9]"
+            aria-label={`View ${p.name} screenshots full screen`}
+            data-cursor="Zoom"
+            data-cs-in
+          >
+            <ProjectMedia project={p} large />
+            <span className="absolute bottom-3 right-3 z-10 rounded-full bg-ink/75 px-3 py-1 text-xs font-semibold text-paper backdrop-blur">Tap to zoom</span>
+          </button>
+        ) : (
+          <div className="relative mt-12 aspect-[16/11] overflow-hidden rounded-[1.75rem] sm:aspect-[16/9]" data-cs-in>
+            <ProjectMedia project={p} large />
+          </div>
+        )}
         {p.visual && <p className="mt-3 text-xs text-grey">Illustration of the product. Screens are available on request.</p>}
 
         {/* Problem → solution */}
@@ -123,14 +146,28 @@ export default function CaseStudy({ project: p, onClose, onOpen }: { project: Pr
           </ol>
         </div>
 
-        {/* More screens */}
-        {p.shots.length > 1 && (
-          <div className="mt-20 grid gap-6 md:grid-cols-2">
-            {p.shots.slice(1).map((s) => (
-              <div key={s} className="overflow-hidden rounded-[1.25rem] border border-line bg-white shadow-[0_30px_60px_-40px_rgba(10,9,9,0.4)]">
-                <Shot name={s} sizes="(min-width: 768px) 45vw, 92vw" className="aspect-[16/10] w-full object-cover object-top" />
-              </div>
-            ))}
+        {/* Screens: tap any to see it full screen */}
+        {screens.length > 1 && (
+          <div className="mt-20">
+            <span className="slash">Screens</span>
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3">
+              {screens.map((it, i) => (
+                <button
+                  key={it.name}
+                  onClick={() => setZoom(i)}
+                  className={`group relative overflow-hidden rounded-[1rem] border border-line bg-white shadow-[0_30px_60px_-40px_rgba(10,9,9,0.4)] sm:rounded-[1.25rem] ${it.mobile ? 'row-span-2' : ''}`}
+                  aria-label={`View screen ${i + 1} full screen`}
+                  data-cursor="Zoom"
+                >
+                  <Shot
+                    name={it.name}
+                    mobile={it.mobile}
+                    sizes="(min-width: 768px) 30vw, 46vw"
+                    className={`h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03] ${it.mobile ? '' : 'aspect-[16/10]'}`}
+                  />
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
@@ -146,6 +183,21 @@ export default function CaseStudy({ project: p, onClose, onOpen }: { project: Pr
           </div>
         </div>
 
+        {/* Call to action */}
+        <div className="mt-20 rounded-[1.5rem] bg-ink px-6 py-8 text-paper sm:px-10 sm:py-10">
+          <p className="font-display text-2xl font-bold uppercase tracking-[-0.03em] sm:text-4xl">Want something like this for your business?</p>
+          <p className="mt-2 text-paper/70">This is a demo with sample data. I can build a version around your business, your brand and your customers.</p>
+          <a
+            href={waLink(`Hi Zain, I saw your ${p.name} demo. I'd like something like this for my business.`)}
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-paper mt-6"
+            data-magnetic
+          >
+            Let's talk <ArrowUpRight size={18} />
+          </a>
+        </div>
+
         {/* Next */}
         <button onClick={() => onOpen(next.id)} className="group mt-24 block w-full border-t border-line pt-10 text-left" data-cursor="Next">
           <span className="text-sm text-grey">Next project</span>
@@ -155,6 +207,8 @@ export default function CaseStudy({ project: p, onClose, onOpen }: { project: Pr
           </span>
         </button>
       </article>
+
+      {zoom !== null && <Lightbox items={screens} index={zoom} onIndex={setZoom} onClose={() => setZoom(null)} />}
     </div>
   )
 }
