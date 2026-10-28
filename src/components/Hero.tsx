@@ -91,10 +91,10 @@ export default function Hero() {
 
       {/* The name sits in front of the portrait, so it can always be read in full */}
       <h1 className="pointer-events-none relative z-20 px-4 font-display font-bold uppercase leading-[0.82] tracking-[-0.055em] sm:px-8" aria-label={ME.name}>
-        <span data-name-a className="text-outline-ink block text-[clamp(4.5rem,23vw,9rem)] sm:text-[clamp(5rem,17vw,19rem)]" aria-hidden="true">
+        <span data-name-a className="text-outline-ink block text-[clamp(4.5rem,23vw,9rem)] sm:text-[clamp(4rem,min(17vw,24svh),19rem)]" aria-hidden="true">
           <Letters text={ME.first} />
         </span>
-        <span data-name-b className="text-halo block text-right text-[clamp(3rem,15.5vw,6rem)] sm:text-[clamp(4rem,12.5vw,14rem)]" aria-hidden="true">
+        <span data-name-b className="text-halo block text-right text-[clamp(3rem,15.5vw,6rem)] sm:text-[clamp(3rem,min(12.5vw,17.5svh),14rem)]" aria-hidden="true">
           <Letters text={ME.last} />
         </span>
       </h1>
@@ -102,7 +102,7 @@ export default function Hero() {
       {/* Portrait: greyscale, with a colour reveal under the pointer */}
       <div
         ref={photo}
-        className="pointer-events-none relative z-10 -mt-6 min-h-0 w-full flex-1 overflow-hidden lg:-mt-[2.5vw]"
+        className="pointer-events-none relative z-10 -mt-6 min-h-0 w-full flex-1 overflow-hidden lg:-mt-[5svh]"
         style={{ '--x': '50%', '--y': '40%', '--r': '0px' } as CSSProperties}
       >
         {/* The entrance animates this inner layer; the scroll drift moves the outer one, so they never fight. */}
