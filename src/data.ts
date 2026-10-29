@@ -94,6 +94,32 @@ export const PROJECTS: Project[] = [
     tone: '#0b3a40',
   },
   {
+    id: 'ember',
+    name: 'Ember',
+    category: 'Web',
+    status: 'Live demo',
+    year: '2026',
+    kind: 'Café & restaurant website + online ordering',
+    outcome: 'Demo café-restaurant site where guests order ahead or book a table in under a minute.',
+    problem:
+      'Most cafés and restaurants have a menu PDF and a phone number for a website, so guests order through delivery apps that take 25 to 35% commission, or go elsewhere.',
+    solution:
+      'One site for a café by day and a fire-cooked kitchen by night: a day/night switch changes the whole look and menu, the menu adds straight to a pickup or delivery order, and a 3-step booking ends with a calendar invite. An AI host can start a booking from one sentence.',
+    features: [
+      'Day/night mood switch that re-themes the whole site',
+      'Online ordering: filters, cart, checkout, live order tracker',
+      'Table booking with live times and an Add to calendar ticket',
+      'Drink builder with a realistic animated cup',
+      'AI host that books "a table for 4 tomorrow at 7"',
+    ],
+    stack: ['React', 'TypeScript', 'GSAP', 'WebGL', 'Tailwind'],
+    live: 'https://ember-cafe-one.vercel.app',
+    code: 'https://github.com/zain-maan/Ember-Cafe',
+    shots: ['ember-desk', 'ember-cup', 'ember-reserve'],
+    mobile: 'ember-mob',
+    tone: '#2a160b',
+  },
+  {
     id: 'corpmind',
     name: 'CorpMind',
     category: 'AI',
